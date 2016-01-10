@@ -63,5 +63,6 @@
             android:text="Follow"
             android:id="@+id/followBTN"
             android:layout_gravity="center_horizontal" />
+
     </LinearLayout>
 </RelativeLayout>
