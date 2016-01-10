@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LeFo</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!--parse api keys NB: DO NOT CHANGE -->
+    <string name="PARSE_APP_KEY">U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp</string>
+    <string name="PARSE_CLIENT_KEY">PPNey0aT3L0LAuj9LuEgBgtSpn4eEALQ5WMJzAM6</string>
+
+
+
+</resources>
