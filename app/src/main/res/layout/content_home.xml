@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab1"
-            android:text="Jouney"
+            android:text="Journey"
             android:background="@color/wallet_dim_foreground_holo_dark"/>
 
         <Button
@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab2"
-            android:text="Live Tracking" />
+            android:text="Live Track" />
 
     </LinearLayout>
 
