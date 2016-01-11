@@ -1,6 +1,9 @@
 package com.lmntrx.lefo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,9 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    Control control = new Control();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,17 +109,29 @@ public class Home extends AppCompatActivity
     }
 
     public void startLead(View v) {
-        Intent intent = new Intent(this, Lead.class);
-        startActivity(intent);
+        if (control.isNetworkAvailable(this)) {
+            Intent intent = new Intent(this, Lead.class);
+            startActivity(intent);
+        } else {
+            Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void startFollow(View v) {
-        Intent intent = new Intent(this, Follow.class);
-        startActivity(intent);
+        if (control.isNetworkAvailable(this)) {
+            Intent intent = new Intent(this, Follow.class);
+            startActivity(intent);
+        } else {
+            Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void startLiveTrack(View v) {
         Intent intent = new Intent(this, livetrack.class);
         startActivity(intent);
     }
+
+
 }
