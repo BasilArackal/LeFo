@@ -69,6 +69,13 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_splashscreen">splashscreen</string>
+    <string name="guestBtn">Guest</string>
+    <string name="loginBtn">Login</string>
+    <string name="journeyTab">Journey</string>
+    <string name="livetrackTab">Live Track</string>
+    <string name="leadBtn">Lead</string>
+    <string name="followbtn">Follow</string>
+    <string name="title_activity_lead">Lead</string>
 
 
 </resources>

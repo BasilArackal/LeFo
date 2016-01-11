@@ -69,7 +69,7 @@ public class Home extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent=new Intent(this,SettingsActivity.class);
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
@@ -100,5 +100,20 @@ public class Home extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void startLead(View v) {
+        Intent intent = new Intent(this, Lead.class);
+        startActivity(intent);
+    }
+
+    public void startFollow(View v) {
+        Intent intent = new Intent(this, Follow.class);
+        startActivity(intent);
+    }
+
+    public void startLiveTrack(View v) {
+        Intent intent = new Intent(this, livetrack.class);
+        startActivity(intent);
     }
 }
