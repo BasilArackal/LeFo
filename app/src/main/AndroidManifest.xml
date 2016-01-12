@@ -40,7 +40,8 @@
             android:label="@string/title_activity_lead"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <service android:name=".LocationService" android:exported="false"/>
+        <service android:name=".LeadLocationAndParseService" android:exported="false"/>
+        <receiver android:name=".CloseLeFoSessionReceiver"/>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -23,6 +25,7 @@ public class Lead extends AppCompatActivity {
     static Boss boss=new Boss();
     public static final String SESSION_CODE=boss.genLeFoCode()+"";
     public static Context CON;
+    public static boolean isLeadWindowActive=false;
 
     public static Boolean isSessionOn=false;
 
@@ -34,6 +37,10 @@ public class Lead extends AppCompatActivity {
     //Choosing server for qrCode generation
     public String qrUrl = qrUrl2;
 
+    public static Activity currentLeadActivity=null;
+
+    static boolean alerted=false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,7 @@ public class Lead extends AppCompatActivity {
 
         qrImg=(ImageView) findViewById(R.id.qrIMG);
         CON=this;
+        currentLeadActivity=this;
 
         //Setting FAB
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -105,24 +113,49 @@ public class Lead extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle("End Session")
-                .setMessage("Do you want to end this LeFo Session?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        boss.deleteSession();
-                        isSessionOn=false;
-                        Lead.this.finish();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+        alertSessionEnd();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isLeadWindowActive=false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isLeadWindowActive=true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isSessionOn=false;
+        Boss.removeNotification();
+    }
+
+    public static void alertSessionEnd(){
+        if (!alerted){
+            new AlertDialog.Builder(CON)
+                    .setCancelable(false)
+                    .setTitle("End Session")
+                    .setMessage("Do you want to end this LeFo Session?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Boss.deleteSession();
+                            isSessionOn=false;
+                            currentLeadActivity.finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            alerted=true;
+        }
+    }
 }

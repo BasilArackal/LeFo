@@ -22,7 +22,7 @@ import com.parse.ParseQuery;
 
 import java.util.List;
 
-public class LocationService extends IntentService {
+public class LeadLocationAndParseService extends IntentService {
 
 
     //Parse ObjectID
@@ -56,9 +56,9 @@ public class LocationService extends IntentService {
     boolean syncStatus = false;
 
 
-    public LocationService() {
+    public LeadLocationAndParseService() {
 
-        super(LocationService.class.getName());
+        super(LeadLocationAndParseService.class.getName());
     }
 
     @Override
@@ -93,6 +93,8 @@ public class LocationService extends IntentService {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
         if (!isSynced){
+
+            //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -192,6 +194,8 @@ public class LocationService extends IntentService {
             parseObject.saveInBackground();
             Log.e("SYNC", "Synced");
             isSynced = true;
+
+            //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions

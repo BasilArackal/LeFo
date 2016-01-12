@@ -1,24 +1,23 @@
 package com.lmntrx.lefo;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.parse.FindCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
-import java.util.List;
 import java.util.Random;
 
 //This class contains the main methods and important stuff to control the overall functionality of LeFo. DO NOT PLAY WITH IT!!
@@ -41,6 +40,9 @@ public class Boss {
     public static final String KEY_DEVICE = "deviceName";
     public static final String KEY_isActive = "isActive";
     public static final String KEY_LOCATION = "LOCATION";
+
+    Notification notification=null;
+    static NotificationManager notificationManager=null;
 
 
     //Internet Connectivity Status Check Function
@@ -105,14 +107,49 @@ public class Boss {
         return random.nextInt((max - min + 1) + min);
     }
 
-    public void startSession(Context con, String session_code) {
-        Intent locationService=new Intent(con,LocationService.class);
+    public void startSession(Context context, String session_code) {
+        Intent locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE",session_code);
-        con.startService(locationService);
+        context.startService(locationService);
+        notifySessionRunning(context);
     }
 
-    public void deleteSession() {
-        LocationService.stop=true;
+    public static void deleteSession() {
+        LeadLocationAndParseService.stop=true;
+        removeNotification();
+    }
+
+    public static void removeNotification() {
+        notificationManager.cancelAll();
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void notifySessionRunning(Context context){
+
+        //Intent for direct action from notification
+        Intent deleteIntent=new Intent(context,CloseLeFoSessionReceiver.class);
+        PendingIntent deletePendingIntent=PendingIntent.getBroadcast(context,0,deleteIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //scaling bitmap
+        Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lefo_icon),
+                context.getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+                context.getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
+                true);
+        Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
+        builder.setContentTitle("LeFo Session Running");
+        builder.setContentText("Session Code:" + Lead.SESSION_CODE);
+       // builder.setSubText("Tap to quit session");
+        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel,"End Session",deletePendingIntent);
+        builder.setTicker("LeFo Session Running");
+        builder.setSmallIcon(R.drawable.ic_media_play);
+        builder.setLargeIcon(bm);
+        builder.setAutoCancel(false);
+        builder.setOngoing(true);
+        builder.setPriority(Notification.PRIORITY_HIGH);
+        notification = builder.build();
+        notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
     }
 
 
