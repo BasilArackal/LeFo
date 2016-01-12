@@ -24,7 +24,6 @@ import java.util.List;
 
 public class LocationService extends IntentService {
 
-    public static Boss boss = new Boss();
 
     //Parse ObjectID
     public static String objectId = null;
@@ -68,6 +67,7 @@ public class LocationService extends IntentService {
         SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
 
 
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,20 +85,28 @@ public class LocationService extends IntentService {
     }
 
     private void updateCurrentLocation() {
+        Log.d("Update", "Update Current Location Called");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if (!isSynced){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            if ((current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null) {
+                if ((current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)) == null) {
+                    Log.e("Loaction", "Cannot Locate You");
+                } else
+                    syncDB(current_location);
+            } else
+                syncDB(current_location);
         }
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
 
     }
 
@@ -128,53 +136,51 @@ public class LocationService extends IntentService {
 
         @Override
         public void onProviderDisabled(String s) {
-            //Toast.makeText(CON, "Location was disabled. Please enable it to continue.", Toast.LENGTH_SHORT).show(); //Message when GPS is turned off
-
+            Log.e("Location", "Location was disabled. Please enable it to continue.");
         }
     }
 
     private void updateParseDB(int session_code, Location location) {
-        if (!isSynced) {
-            syncDB(location);
-        } else {
-            //Object ID has to be fetched first
-            //then using it the object is updated with new location
-            ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
-            queryID.whereEqualTo(Boss.KEY_QRCODE, SESSION_CODE);
-            queryID.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> parseObjects, ParseException e) {
-                    if (e == null) {
-                        for (ParseObject result : parseObjects) {
-                            // Retrieving objectId
-                            objectId = result.getObjectId();
-                        }
-                        // Retrieving data from object
-                        if (objectId != null) {
-                            ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_CLASS);
-                            query.getInBackground(objectId, new GetCallback<ParseObject>() {
-                                public void done(ParseObject parseUpdateObject, ParseException e) {
-                                    if (e == null) {
-                                        ParseGeoPoint newGeoPoint = new ParseGeoPoint(current_location.getLatitude(), current_location.getLongitude());
-                                        parseUpdateObject.put(Boss.KEY_LOCATION, newGeoPoint);
-                                        parseUpdateObject.saveInBackground();
-                                    } else {
-                                        Log.e("Update", e.getMessage());
-                                    }
-                                }
-                            });
-                        }
-                    } else {
-                        //Incase of an unknown error
-                        Log.e("Update", e.getMessage());
+
+        //Object ID has to be fetched first
+        //then using it the object is updated with new location
+        Log.d("Update", "Updating ParseDB");
+        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
+        queryID.whereEqualTo(Boss.KEY_QRCODE, session_code);
+        queryID.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject result : parseObjects) {
+                        // Retrieving objectId
+                        objectId = result.getObjectId();
                     }
+                    // Retrieving data from object
+                    if (objectId != null) {
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_CLASS);
+                        query.getInBackground(objectId, new GetCallback<ParseObject>() {
+                            public void done(ParseObject parseUpdateObject, ParseException e) {
+                                if (e == null) {
+                                    ParseGeoPoint newGeoPoint = new ParseGeoPoint(current_location.getLatitude(), current_location.getLongitude());
+                                    parseUpdateObject.put(Boss.KEY_LOCATION, newGeoPoint);
+                                    parseUpdateObject.saveInBackground();
+                                } else {
+                                    Log.e("Update", e.getMessage());
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    //Incase of an unknown error
+                    Log.e("Update", e.getMessage());
                 }
-            });
-        }
+            }
+        });
     }
 
     private void syncDB(Location location) {
         if ((!(SESSION_CODE + "").isEmpty() || SESSION_CODE != 1) && location != null) {
+            Log.d("SYNC", "Syncing to ParseDB");
             ParseObject parseObject = new ParseObject(Boss.PARSE_CLASS);
             ParseGeoPoint geoPoint = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
             parseObject.put(Boss.KEY_QRCODE, SESSION_CODE);
@@ -182,6 +188,17 @@ public class LocationService extends IntentService {
             parseObject.saveInBackground();
             Log.e("SYNC", "Synced");
             isSynced = true;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
         } else {
             Log.e("SYNC", "Code is empty or location is empty");
         }
