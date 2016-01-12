@@ -50,13 +50,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/qrIMG"
             android:gravity="center"
-            android:src="@drawable/loadingnew"
-            android:layout_below="@+id/linearLayout"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:src="@drawable/loadingnew" />
 
     </LinearLayout>
 
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/sessionCodeTxt"
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center" />
 
 </RelativeLayout>

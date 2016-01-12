@@ -13,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.parse.ParseAnalytics;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,6 +29,9 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        boss.initializeParse(this);
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +41,7 @@ public class Home extends AppCompatActivity
             }
         });
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -43,6 +50,8 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Toast.makeText(this,boss.getDeviceName(),Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -129,5 +138,9 @@ public class Home extends AppCompatActivity
         startActivity(intent);
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        boss.checkGooglePlayServiceStatus(this);
+    }
 }

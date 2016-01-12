@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,8 +10,28 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.Random;
 
 public class Lead extends AppCompatActivity {
+
+    ImageView qrImg;
+    static Boss boss=new Boss();
+    public static final String SESSION_CODE=boss.genLeFoCode()+"";
+    public static Context CON;
+
+    public static Boolean isSessionOn=false;
+
+    //URL for generating QRCode for generated random code
+    //Use any of the following servers
+    //public String qrUrl1 = "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=";
+    public String qrUrl2 = "http://qrickit.com/api/qr?d=";
+    public String qrUrl2Size = "&qrsize=500"; //500px. PS: When using url1 remove qrUrl2Size from ImageLoadTask
+    //Choosing server for qrCode generation
+    public String qrUrl = qrUrl2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,14 +40,37 @@ public class Lead extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        qrImg=(ImageView) findViewById(R.id.qrIMG);
+        CON=this;
+
+        //Setting FAB
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (isSessionOn){
+                    Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else {
+                    fab.setImageResource(R.drawable.ic_menu_view);
+                    Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    isSessionOn=true;
+                    boss.startSession(CON,SESSION_CODE);
+                }
+
+
             }
         });
+
+        //Display Lefo_Connection_Code
+        TextView lcodeTXT=(TextView)findViewById(R.id.sessionCodeTxt);
+        lcodeTXT.setText(SESSION_CODE);
+
+        //This Async Task Loads QRCode from qrUrl to qrImg
+        new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
+
+
     }
 
     @Override
@@ -48,7 +92,7 @@ public class Lead extends AppCompatActivity {
             Intent shareIntent=new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"LeFo Connection Code");
-            String shareBody="Connection Code Here";
+            String shareBody=SESSION_CODE;
             shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
             startActivity(shareIntent);
             return true;
@@ -56,5 +100,7 @@ public class Lead extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }
