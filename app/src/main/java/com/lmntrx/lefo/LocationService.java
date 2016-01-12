@@ -28,6 +28,8 @@ public class LocationService extends IntentService {
     //Parse ObjectID
     public static String objectId = null;
 
+    public static boolean stop=false;
+
     //Location Variables
     Location old_location = null;
     Location current_location = null;
@@ -74,7 +76,9 @@ public class LocationService extends IntentService {
                 while (true) {
                     try {
                         Thread.sleep(5000);
-                        updateCurrentLocation();
+                        if (!stop)
+                            updateCurrentLocation();
+                        else stopSelf();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -202,5 +206,36 @@ public class LocationService extends IntentService {
         } else {
             Log.e("SYNC", "Code is empty or location is empty");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        deleteSession();
+        super.onDestroy();
+        Log.d("LOCATION_SERVICE","Exited");
+    }
+
+    private void deleteSession() {
+        ParseQuery query=new ParseQuery(Boss.PARSE_CLASS);
+        query.whereEqualTo(Boss.KEY_QRCODE, SESSION_CODE);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> results, com.parse.ParseException e) {
+                if (e == null) {
+                    for (ParseObject result : results) {
+                        try {
+                            result.delete();
+                            Log.i("Deleted Session",result.get(Boss.KEY_QRCODE)+"");
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        result.saveInBackground();
+                    }
+                } else {
+                    e.printStackTrace();
+                    System.out.print(e.getMessage());
+                }
+            }
+        });
     }
 }

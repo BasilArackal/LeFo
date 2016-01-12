@@ -12,8 +12,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
+import java.util.List;
 import java.util.Random;
 
 //This class contains the main methods and important stuff to control the overall functionality of LeFo. DO NOT PLAY WITH IT!!
@@ -105,4 +110,11 @@ public class Boss {
         locationService.putExtra("SESSION_CODE",session_code);
         con.startService(locationService);
     }
+
+    public void deleteSession() {
+        LocationService.stop=true;
+    }
+
+
+
 }
