@@ -146,6 +146,7 @@ public class Lead extends AppCompatActivity {
         currentLeadActivity=null;
         alerted=false;
         Boss.quitLocationService(this);
+        unregisterReceiver(gpsDisabledBR);
     }
 
     public static void alertSessionEnd(){

@@ -13,9 +13,6 @@ import android.content.Intent;
 public class CloseLeFoSessionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent service=new Intent();
-        service.setComponent(new ComponentName(context, LeadLocationAndParseService.class));
-        context.stopService(service);
         if (Lead.isLeadWindowActive)
             Lead.alertSessionEnd();
         else {
