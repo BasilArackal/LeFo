@@ -2,9 +2,11 @@ package com.lmntrx.lefo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,7 +25,7 @@ public class Lead extends AppCompatActivity {
 
     ImageView qrImg;
     static Boss boss=new Boss();
-    public static final String SESSION_CODE=boss.genLeFoCode()+"";
+    public static String SESSION_CODE;
     public static Context CON;
     public static boolean isLeadWindowActive=false;
 
@@ -48,6 +50,12 @@ public class Lead extends AppCompatActivity {
         setContentView(R.layout.activity_lead);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        SESSION_CODE=Boss.genLeFoCode()+"";
+
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(LeadLocationAndParseService.LOST_GPS);
+        registerReceiver(gpsDisabledBR, intentFilter);
 
         qrImg=(ImageView) findViewById(R.id.qrIMG);
         CON=this;
@@ -133,6 +141,11 @@ public class Lead extends AppCompatActivity {
         super.onDestroy();
         isSessionOn=false;
         Boss.removeNotification();
+        SESSION_CODE=null;
+        isLeadWindowActive=false;
+        currentLeadActivity=null;
+        alerted=false;
+        Boss.quitLocationService(this);
     }
 
     public static void alertSessionEnd(){
@@ -158,4 +171,11 @@ public class Lead extends AppCompatActivity {
             alerted=true;
         }
     }
+
+    private BroadcastReceiver gpsDisabledBR=new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.buildAlertMessageLostGps(context);
+        }
+    };
 }

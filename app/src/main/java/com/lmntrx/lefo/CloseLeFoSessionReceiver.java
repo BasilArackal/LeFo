@@ -21,6 +21,7 @@ public class CloseLeFoSessionReceiver extends BroadcastReceiver {
         else {
             Boss.deleteSession();
             Lead.currentLeadActivity.finish();
+
         }
     }
 }

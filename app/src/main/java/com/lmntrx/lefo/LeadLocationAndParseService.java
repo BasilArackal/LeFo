@@ -2,7 +2,9 @@ package com.lmntrx.lefo;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +27,9 @@ import java.util.List;
 public class LeadLocationAndParseService extends IntentService {
 
 
+    //GPS LOST Token
+    public static final String LOST_GPS="com.lmntrx.Lead";
+
     //Parse ObjectID
     public static String objectId = null;
 
@@ -36,7 +41,7 @@ public class LeadLocationAndParseService extends IntentService {
     Location gps_location = null;
     Location network_location = null;
     public final long MIN_TIME = 8000; //5000ms=5s
-    public final float MIN_DISTANCE = 5;//2m
+    public final float MIN_DISTANCE = 10;//2m
 
     public static boolean isSynced = false;
 
@@ -45,9 +50,6 @@ public class LeadLocationAndParseService extends IntentService {
 
     //LeFo_LocationListener is defined below
     LocationListener locationListener;
-
-    //Context
-    Context CON;
 
     //variable for holding Code
     public int SESSION_CODE = 1;
@@ -61,10 +63,11 @@ public class LeadLocationAndParseService extends IntentService {
         super(LeadLocationAndParseService.class.getName());
     }
 
+    @SuppressLint("LongLogTag")
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        Log.e("LOCATION SERVICE", "Service Started");
+        Log.e(Boss.LOG_TAG+"LOCATION_SERVICE", "Service Started");
 
         SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
 
@@ -78,7 +81,9 @@ public class LeadLocationAndParseService extends IntentService {
                         Thread.sleep(5000);
                         if (!stop)
                             updateCurrentLocation();
-                        else stopSelf();
+                        else {
+                            exit();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -88,8 +93,12 @@ public class LeadLocationAndParseService extends IntentService {
 
     }
 
+    public void exit() {
+        LeadLocationAndParseService.this.stopSelf();
+    }
+
     private void updateCurrentLocation() {
-        Log.d("Update", "Update Current Location Called");
+        Log.d(Boss.LOG_TAG+"Update", "Update Current Location Called");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
         if (!isSynced){
@@ -107,7 +116,7 @@ public class LeadLocationAndParseService extends IntentService {
             }
             if ((current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null) {
                 if ((current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)) == null) {
-                    Log.e("Loaction", "Cannot Locate You");
+                    Log.e(Boss.LOG_TAG+"Location", "Cannot Locate You");
                 } else
                     syncDB(current_location);
             } else
@@ -142,15 +151,21 @@ public class LeadLocationAndParseService extends IntentService {
 
         @Override
         public void onProviderDisabled(String s) {
-            Log.e("Location", "Location was disabled. Please enable it to continue.");
+            alertDisabledGps();
+            Log.e(Boss.LOG_TAG+"Location", "Location was disabled. Please enable it to continue.");
         }
+    }
+
+    private void alertDisabledGps() {
+        Intent brIntent=new Intent(LOST_GPS);
+        LeadLocationAndParseService.this.sendBroadcast(brIntent);
     }
 
     private void updateParseDB(int session_code, Location location) {
 
         //Object ID has to be fetched first
         //then using it the object is updated with new location
-        Log.d("Update", "Updating ParseDB");
+        Log.d(Boss.LOG_TAG+"Update", "Updating ParseDB");
         ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
         queryID.whereEqualTo(Boss.KEY_QRCODE, session_code);
         queryID.findInBackground(new FindCallback<ParseObject>() {
@@ -171,14 +186,14 @@ public class LeadLocationAndParseService extends IntentService {
                                     parseUpdateObject.put(Boss.KEY_LOCATION, newGeoPoint);
                                     parseUpdateObject.saveInBackground();
                                 } else {
-                                    Log.e("Update", e.getMessage());
+                                    Log.e(Boss.LOG_TAG+"Update", e.getMessage());
                                 }
                             }
                         });
                     }
                 } else {
                     //Incase of an unknown error
-                    Log.e("Update", e.getMessage());
+                    Log.e(Boss.LOG_TAG+"Update", e.getMessage());
                 }
             }
         });
@@ -186,13 +201,13 @@ public class LeadLocationAndParseService extends IntentService {
 
     private void syncDB(Location location) {
         if ((!(SESSION_CODE + "").isEmpty() || SESSION_CODE != 1) && location != null) {
-            Log.d("SYNC", "Syncing to ParseDB");
+            Log.d(Boss.LOG_TAG+"SYNC", "Syncing to ParseDB");
             ParseObject parseObject = new ParseObject(Boss.PARSE_CLASS);
             ParseGeoPoint geoPoint = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
             parseObject.put(Boss.KEY_QRCODE, SESSION_CODE);
             parseObject.put(Boss.KEY_LOCATION, geoPoint);
             parseObject.saveInBackground();
-            Log.e("SYNC", "Synced");
+            Log.e(Boss.LOG_TAG+"SYNC", "Synced");
             isSynced = true;
 
             //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
@@ -208,7 +223,7 @@ public class LeadLocationAndParseService extends IntentService {
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
         } else {
-            Log.e("SYNC", "Code is empty or location is empty");
+            Log.e(Boss.LOG_TAG+"SYNC", "Code is empty or location is empty");
         }
     }
 
@@ -229,7 +244,7 @@ public class LeadLocationAndParseService extends IntentService {
                     for (ParseObject result : results) {
                         try {
                             result.delete();
-                            Log.i("Deleted Session",result.get(Boss.KEY_QRCODE)+"");
+                            Log.i(Boss.LOG_TAG+"Deleted Session",result.get(Boss.KEY_QRCODE)+"");
                         } catch (ParseException e1) {
                             e1.printStackTrace();
                         }

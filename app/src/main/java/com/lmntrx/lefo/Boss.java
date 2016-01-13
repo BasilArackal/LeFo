@@ -1,10 +1,12 @@
 package com.lmntrx.lefo;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +25,12 @@ import java.util.Random;
 //This class contains the main methods and important stuff to control the overall functionality of LeFo. DO NOT PLAY WITH IT!!
 
 public class Boss {
+
+    public static final String LOG_TAG="LeFoLog ";
+
+    public static boolean isGpsTurnedOnRightNow=false;
+
+    static Intent locationService;
 
     //Parse Authentication Keys
     public final String PARSE_APP_KEY="U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
@@ -101,14 +109,14 @@ public class Boss {
     }
 
     //Random Code Generator
-    public int genLeFoCode() {
+    public static int genLeFoCode() {
         Random random = new Random();
         int min = 999, max = 99999999;
         return random.nextInt((max - min + 1) + min);
     }
 
     public void startSession(Context context, String session_code) {
-        Intent locationService=new Intent(context,LeadLocationAndParseService.class);
+        locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE",session_code);
         context.startService(locationService);
         notifySessionRunning(context);
@@ -152,6 +160,51 @@ public class Boss {
         notificationManager.notify(1, notification);
     }
 
+    //EnableGPS Dialog
+    public static void buildAlertMessageNoGps(final Context context) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
+                .setCancelable(false)
+                .setTitle("Location Turned Off")
+                .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        isGpsTurnedOnRightNow=true;
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
 
+
+    public static void buildAlertMessageLostGps(final Context context) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
+                .setCancelable(false)
+                .setTitle("Location Turned Off")
+                .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                        Boss.deleteSession();
+                        Lead.currentLeadActivity.finish();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public static void quitLocationService(Context context){
+        context.stopService(locationService);
+    }
 
 }

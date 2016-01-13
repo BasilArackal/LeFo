@@ -1,5 +1,7 @@
 package com.lmntrx.lefo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +23,7 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Boss boss = new Boss();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +118,10 @@ public class Home extends AppCompatActivity
 
     public void startLead(View v) {
         if (boss.isNetworkAvailable(this)) {
-            Intent intent = new Intent(this, Lead.class);
-            startActivity(intent);
+            if (boss.isGpsEnabled(this)){
+                Intent intent = new Intent(this, Lead.class);
+                startActivity(intent);
+            }else Boss.buildAlertMessageNoGps(this);
         } else {
             Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -125,8 +130,10 @@ public class Home extends AppCompatActivity
 
     public void startFollow(View v) {
         if (boss.isNetworkAvailable(this)) {
-            Intent intent = new Intent(this, Follow.class);
-            startActivity(intent);
+            if (boss.isGpsEnabled(this)){
+                Intent intent = new Intent(this, Follow.class);
+                startActivity(intent);
+            }else Boss.buildAlertMessageNoGps(this);
         } else {
             Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -142,5 +149,11 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         boss.checkGooglePlayServiceStatus(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Boss.removeNotification();
     }
 }
