@@ -1,9 +1,7 @@
 package com.lmntrx.lefo;
 
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +10,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -22,10 +22,12 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.security.BasicPermission;
 import java.util.List;
 
-public class LeadLocationAndParseService extends IntentService {
+/**
+ * Created by livin on 13/1/16.
+ */
+public class LeadLocationAndParseService extends Service {
 
 
     //GPS LOST Token
@@ -54,14 +56,17 @@ public class LeadLocationAndParseService extends IntentService {
     public int SESSION_CODE = 1;
 
 
-    public LeadLocationAndParseService() {
-
-        super(LeadLocationAndParseService.class.getName());
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
-    @SuppressLint("LongLogTag")
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        isSynced = false;
+        stop = false;
 
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Service Started");
 
@@ -69,8 +74,6 @@ public class LeadLocationAndParseService extends IntentService {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
-
-        final Context context=this;
 
 
         new Thread(new Runnable() {
@@ -93,31 +96,14 @@ public class LeadLocationAndParseService extends IntentService {
         }).run();
 
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
-                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                         return;
-                    }else{
-                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
-                    }
-                }
-            }).run();
-
+        return super.onStartCommand(intent, flags, startId);
     }
 
+
     public void exit() {
-        stop=false;
-        isSynced=false;
-        objectId=null;
+        stop = false;
+        isSynced = false;
+        objectId = null;
         LeadLocationAndParseService.this.stopSelf();
     }
 
@@ -136,7 +122,7 @@ public class LeadLocationAndParseService extends IntentService {
                 // for ActivityCompat#requestPermissions for more details.
 
                 //return;
-            }else {
+            } else {
                 if ((current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null) {
                     if ((current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)) == null) {
                         Log.e(Boss.LOG_TAG + "Location", "Cannot Locate You");
@@ -158,7 +144,6 @@ public class LeadLocationAndParseService extends IntentService {
                 //Registering new location in database
                 if (old_location != current_location) {
                     updateParseDB(SESSION_CODE, location);
-                    Log.e(Boss.LOG_TAG + "Chakkara", "Update called manushya!!");
                     old_location = current_location;
                 }
             }
@@ -166,7 +151,7 @@ public class LeadLocationAndParseService extends IntentService {
 
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
-            Log.e(Boss.LOG_TAG + "Chakkara", "Status changed manushya!!");
+            Log.e(Boss.LOG_TAG + "LocationListener", "Status changed");
 
         }
 
@@ -178,7 +163,7 @@ public class LeadLocationAndParseService extends IntentService {
         @Override
         public void onProviderDisabled(String s) {
             alertDisabledGps();
-            Log.e(Boss.LOG_TAG + "Location", "Location was disabled. Please enable it to continue.");
+            Log.e(Boss.LOG_TAG + "Location", "Location was disabled");
         }
     }
 
@@ -238,12 +223,35 @@ public class LeadLocationAndParseService extends IntentService {
         } else {
             Log.e(Boss.LOG_TAG + "SYNC", "Code is empty or location is empty");
         }
+        //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
+        }
     }
 
     @SuppressLint("LongLogTag")
     @Override
     public void onDestroy() {
         deleteSession();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }else locationManager.removeUpdates(locationListener);
         super.onDestroy();
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Exited");
     }
@@ -271,4 +279,11 @@ public class LeadLocationAndParseService extends IntentService {
             }
         });
     }
+
+
+
+
+
+
+
 }

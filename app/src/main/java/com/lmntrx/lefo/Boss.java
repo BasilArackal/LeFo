@@ -28,8 +28,6 @@ public class Boss {
 
     public static final String LOG_TAG="LeFoLog ";
 
-    public static boolean isGpsTurnedOnRightNow=false;
-
     static Intent locationService;
 
     //Parse Authentication Keys
@@ -116,6 +114,7 @@ public class Boss {
     }
 
     public void startSession(Context context, String session_code) {
+        //locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE",session_code);
         context.startService(locationService);
@@ -123,6 +122,7 @@ public class Boss {
     }
 
     public static void deleteSession() {
+        //LeadLocationAndParseService.stop=true;
         LeadLocationAndParseService.stop=true;
         removeNotification();
     }
@@ -165,11 +165,10 @@ public class Boss {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
-                .setTitle("Location Turned Off")
+                .setTitle("Session Interrupted")
                 .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        isGpsTurnedOnRightNow=true;
                     }
                 })
                 .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
