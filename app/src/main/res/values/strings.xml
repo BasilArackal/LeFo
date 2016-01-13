@@ -76,6 +76,8 @@
     <string name="leadBtn">Lead</string>
     <string name="followbtn">Follow</string>
     <string name="title_activity_lead">Lead</string>
+    <string name="menu_item_refresh">Refresh</string>
+    <string name="menu_item_share">Share</string>
 
 
 </resources>

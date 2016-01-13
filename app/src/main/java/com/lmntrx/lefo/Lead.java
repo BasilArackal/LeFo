@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -7,11 +8,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,12 +30,14 @@ import java.util.Random;
 public class Lead extends AppCompatActivity {
 
     ImageView qrImg;
-    static Boss boss=new Boss();
-    public static String SESSION_CODE;
+    static Boss boss = new Boss();
+    public static String SESSION_CODE = null;
     public static Context CON;
-    public static boolean isLeadWindowActive=false;
+    public static boolean isLeadWindowActive = false;
 
-    public static Boolean isSessionOn=false;
+    public static boolean canRefresh;
+
+    public static Boolean isSessionOn = false;
 
     //URL for generating QRCode for generated random code
     //Use any of the following servers
@@ -39,9 +47,11 @@ public class Lead extends AppCompatActivity {
     //Choosing server for qrCode generation
     public String qrUrl = qrUrl2;
 
-    public static Activity currentLeadActivity=null;
+    public static Activity currentLeadActivity = null;
 
-    static boolean alerted=false;
+    static boolean alerted = false;
+
+    public static FloatingActionButton fab;
 
 
     @Override
@@ -51,44 +61,58 @@ public class Lead extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SESSION_CODE=Boss.genLeFoCode()+"";
+        qrImg = (ImageView) findViewById(R.id.qrIMG);
 
-        IntentFilter intentFilter=new IntentFilter();
-        intentFilter.addAction(LeadLocationAndParseService.LOST_GPS);
-        registerReceiver(gpsDisabledBR, intentFilter);
+        CON = this;
+        currentLeadActivity = this;
 
-        qrImg=(ImageView) findViewById(R.id.qrIMG);
-        CON=this;
-        currentLeadActivity=this;
+
+        SESSION_CODE = Boss.genLeFoCode() + "";
+
+
+        canRefresh = true;
+
+        isSessionOn=false;
 
         //Setting FAB
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isSessionOn){
+                if (isSessionOn) {
                     Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                }else {
-                    fab.setImageResource(R.drawable.ic_menu_view);
+                } else {
                     Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    isSessionOn=true;
-                    boss.startSession(CON,SESSION_CODE);
+                    isSessionOn = true;
+                    canRefresh = false;
+                    fab.setImageResource(R.drawable.ic_menu_view);
+                    boss.startSession(CON, SESSION_CODE);
                 }
-
-
             }
         });
 
+
         //Display Lefo_Connection_Code
-        TextView lcodeTXT=(TextView)findViewById(R.id.sessionCodeTxt);
+        TextView lcodeTXT = (TextView) findViewById(R.id.sessionCodeTxt);
         lcodeTXT.setText(SESSION_CODE);
 
         //This Async Task Loads QRCode from qrUrl to qrImg
         new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
 
+        //Intent Filters
+        IntentFilter gpsDisabled = new IntentFilter();
+        gpsDisabled.addAction(LeadLocationAndParseService.LOST_GPS);
+        registerReceiver(gpsDisabledBR, gpsDisabled);
 
+        IntentFilter cannotLocate = new IntentFilter();
+        cannotLocate.addAction(LeadLocationAndParseService.CANNOT_LOCATE);
+        registerReceiver(cannotLocateBR, cannotLocate);
+
+        IntentFilter noLocationPermission = new IntentFilter();
+        noLocationPermission.addAction(LeadLocationAndParseService.NO_LOCATION_PERMISSION);
+        registerReceiver(noLocationPermissionBR, noLocationPermission);
     }
 
     @Override
@@ -107,58 +131,79 @@ public class Lead extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_share) {
-            Intent shareIntent=new Intent(Intent.ACTION_SEND);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"LeFo Connection Code");
-            String shareBody=SESSION_CODE;
+            shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "LeFo Connection Code");
+            String shareBody = SESSION_CODE;
             shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
             startActivity(shareIntent);
             return true;
+        } else if (id == R.id.action_refresh) {
+            refresh();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void refresh() {
+        if (canRefresh) {
+            SESSION_CODE = Boss.genLeFoCode() + "";
+
+            //Display Lefo_Connection_Code
+            TextView lcodeTXT = (TextView) findViewById(R.id.sessionCodeTxt);
+            lcodeTXT.setText(SESSION_CODE);
+
+            //This Async Task Loads QRCode from qrUrl to qrImg
+            new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
+        } else {
+            Toast.makeText(this, "Can't refresh during an ongoing LeFo Session", Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        alertSessionEnd();
+
+        if (isSessionOn)
+            alertSessionEnd();
+        else super.onBackPressed();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        isLeadWindowActive=false;
+        isLeadWindowActive = false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        isLeadWindowActive=true;
+        isLeadWindowActive = true;
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        isSessionOn=false;
-        Boss.removeNotification();
-        SESSION_CODE=null;
-        isLeadWindowActive=false;
-        currentLeadActivity=null;
-        alerted=false;
-        Boss.quitLocationService(this);
+        Boss.deleteSession(this);
+        isSessionOn = false;
+        SESSION_CODE = null;
+        isLeadWindowActive = false;
+        currentLeadActivity = null;
+        alerted = false;
         unregisterReceiver(gpsDisabledBR);
+        unregisterReceiver(cannotLocateBR);
+        unregisterReceiver(noLocationPermissionBR);
+        super.onDestroy();
     }
 
-    public static void alertSessionEnd(){
-        if (!alerted){
+    public static void alertSessionEnd() {
+        if (!alerted) {
             new AlertDialog.Builder(CON)
                     .setCancelable(false)
                     .setTitle("End Session")
                     .setMessage("Do you want to end this LeFo Session?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Boss.deleteSession();
-                            isSessionOn=false;
+                            Boss.deleteSession(CON);
+                            isSessionOn = false;
                             currentLeadActivity.finish();
                         }
                     })
@@ -169,14 +214,39 @@ public class Lead extends AppCompatActivity {
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
-            alerted=true;
+            alerted = true;
         }
     }
 
-    private BroadcastReceiver gpsDisabledBR=new BroadcastReceiver() {
+    private BroadcastReceiver gpsDisabledBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Boss.buildAlertMessageLostGps(context);
         }
     };
+
+    private BroadcastReceiver cannotLocateBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            View view = fab;
+            Snackbar.make(view, "Sorry, Session Failed. We couldn't locate you. Try again later", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+        }
+    };
+
+    private BroadcastReceiver noLocationPermissionBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            View view = fab;
+            Log.d(Boss.LOG_TAG, "Recieved BR");
+            Snackbar.make(view, "Sorry, Session Failed. Please grant permission to access location and try again.", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Action", null).show();
+            Boss.askPermission("LOCATION");
+        }
+    };
+
+    public static void makeToast(String s, int length) {
+        Toast.makeText(CON, s, length).show();
+    }
 }

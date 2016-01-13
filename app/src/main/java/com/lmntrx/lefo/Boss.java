@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -14,12 +15,19 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
+import java.util.List;
 import java.util.Random;
 
 //This class contains the main methods and important stuff to control the overall functionality of LeFo. DO NOT PLAY WITH IT!!
@@ -114,41 +122,45 @@ public class Boss {
     }
 
     public void startSession(Context context, String session_code) {
-        //locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE",session_code);
         context.startService(locationService);
         notifySessionRunning(context);
     }
 
-    public static void deleteSession() {
+    public static void deleteSession(Context context) {
+        context.stopService(locationService);
         //LeadLocationAndParseService.stop=true;
-        LeadLocationAndParseService.stop=true;
         removeNotification();
     }
 
     public static void removeNotification() {
         notificationManager.cancelAll();
+        Lead.canRefresh=true;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void notifySessionRunning(Context context){
-
+        Lead.canRefresh=false;
         //Intent for direct action from notification
         Intent deleteIntent=new Intent(context,CloseLeFoSessionReceiver.class);
-        PendingIntent deletePendingIntent=PendingIntent.getBroadcast(context,0,deleteIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent deletePendingIntent=PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //scaling bitmap
         Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lefo_icon),
                 context.getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
                 context.getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
                 true);
+
+        Intent contentIntent=new Intent(context,Lead.class);
+        PendingIntent contentPendingIntent=PendingIntent.getBroadcast(context,0,contentIntent,PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
         builder.setContentTitle("LeFo Session Running");
         builder.setContentText("Session Code:" + Lead.SESSION_CODE);
        // builder.setSubText("Tap to quit session");
-        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel,"End Session",deletePendingIntent);
-        builder.setTicker("LeFo Session Running");
+        builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "End Session", deletePendingIntent);
+        builder.setTicker("LeFo Session Initiated");
+        builder.setContentIntent(contentPendingIntent);
         builder.setSmallIcon(R.drawable.ic_media_play);
         builder.setLargeIcon(bm);
         builder.setAutoCancel(false);
@@ -194,7 +206,7 @@ public class Boss {
                 .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
-                        Boss.deleteSession();
+                        Boss.deleteSession(context);
                         Lead.currentLeadActivity.finish();
                     }
                 });
@@ -206,4 +218,18 @@ public class Boss {
         context.stopService(locationService);
     }
 
+    public static void askPermission(String name) {
+
+        switch (name){
+            case "LOCATION":{
+                ActivityCompat.requestPermissions(Lead.currentLeadActivity,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+            }
+        }
+    }
+
+    public static void revertFAB() {
+        Lead.fab.setImageResource(R.drawable.ic_media_play);
+    }
 }

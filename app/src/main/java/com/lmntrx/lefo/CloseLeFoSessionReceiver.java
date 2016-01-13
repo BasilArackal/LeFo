@@ -16,7 +16,7 @@ public class CloseLeFoSessionReceiver extends BroadcastReceiver {
         if (Lead.isLeadWindowActive)
             Lead.alertSessionEnd();
         else {
-            Boss.deleteSession();
+            Boss.deleteSession(context);
             Lead.currentLeadActivity.finish();
 
         }
