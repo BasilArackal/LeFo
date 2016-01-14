@@ -21,7 +21,7 @@ public class Follow extends AppCompatActivity {
     }
 
     public void openQRScanner(View view) {
-        try {
+        /*try {
 
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
@@ -37,6 +37,7 @@ public class Follow extends AppCompatActivity {
                 Toast.makeText(this,"Your device doesn't support this task. Please enter code manually",Toast.LENGTH_LONG).show();
             }
 
-        }
+        }*/
+        startActivity(new Intent(this,Scanner.class));
     }
 }

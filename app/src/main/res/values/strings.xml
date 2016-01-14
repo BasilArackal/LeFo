@@ -80,6 +80,7 @@
     <string name="menu_item_share">Share</string>
     <string name="hintCodeEntry">Enter Shared Code Here</string>
     <string name="scanQRbuttonTxt">Scan QR Code</string>
+    <string name="toggle_flash">Toggle Flash</string>
 
 
 </resources>

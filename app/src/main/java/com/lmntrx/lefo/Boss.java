@@ -36,6 +36,8 @@ public class Boss {
 
     public static final String LOG_TAG="LeFoLog ";
 
+    public static int SESSION_APPROVED=2;
+
     static Intent locationService;
 
     //Parse Authentication Keys
@@ -231,5 +233,11 @@ public class Boss {
 
     public static void revertFAB() {
         Lead.fab.setImageResource(R.drawable.ic_media_play);
+    }
+
+    public static int verifySessionCode(String session_code) {
+        //verify session code here
+
+        return 0;
     }
 }
