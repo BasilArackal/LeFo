@@ -58,6 +58,8 @@ public class Boss {
     Notification notification=null;
     static NotificationManager notificationManager=null;
 
+    public static boolean notified=false;
+
 
     //Internet Connectivity Status Check Function
     public boolean isNetworkAvailable(Context con) {
@@ -135,6 +137,7 @@ public class Boss {
     }
 
     public static void removeNotification() {
+        if (notified)
         notificationManager.cancelAll();
         Lead.canRefresh=true;
     }
@@ -170,6 +173,7 @@ public class Boss {
         notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, notification);
+        notified=true;
     }
 
     //EnableGPS Dialog
@@ -177,13 +181,13 @@ public class Boss {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
-                .setTitle("Session Interrupted")
+                .setTitle("Turn On Location")
                 .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                     }
@@ -197,7 +201,7 @@ public class Boss {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
-                .setTitle("Location Turned Off")
+                .setTitle("Session Interrupted")
                 .setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         context.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -212,10 +216,6 @@ public class Boss {
                 });
         final AlertDialog alert = builder.create();
         alert.show();
-    }
-
-    public static void quitLocationService(Context context){
-        context.stopService(locationService);
     }
 
     public static void askPermission(String name) {

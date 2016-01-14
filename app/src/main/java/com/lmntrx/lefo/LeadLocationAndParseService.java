@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -58,9 +59,6 @@ public class LeadLocationAndParseService extends Service {
     public int SESSION_CODE = 1;
 
     int count=0;
-
-
-    boolean deleted=false;
 
     boolean exitCalled=false;
 
@@ -175,13 +173,18 @@ public class LeadLocationAndParseService extends Service {
 
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
-            Log.e(Boss.LOG_TAG + "LocationListener", "Status changed");
+            switch (i){
+                case LocationProvider.AVAILABLE : Log.i(Boss.LOG_TAG+"LocationListener","GPS Available"); break;
+                case LocationProvider.OUT_OF_SERVICE : Log.e(Boss.LOG_TAG+"LocationListener","GPS Out Of Service"); break;
+                case LocationProvider.TEMPORARILY_UNAVAILABLE : Log.w(Boss.LOG_TAG+"LocationListener","GPS Temporarily Unavailable"); break;
+                default: Log.e(Boss.LOG_TAG + "LocationListener", "Status changed");
+            }
 
         }
 
         @Override
         public void onProviderEnabled(String s) {
-
+            Log.e(Boss.LOG_TAG + "Location", "Location was enabled");
         }
 
         @Override
@@ -282,7 +285,6 @@ public class LeadLocationAndParseService extends Service {
                     for (ParseObject result : results) {
                         try {
                             result.delete();
-                            deleted=true;
                             Log.i(Boss.LOG_TAG + "Deleted Session", result.get(Boss.KEY_QRCODE) + "");
                         } catch (ParseException e1) {
                             e1.printStackTrace();
@@ -295,9 +297,6 @@ public class LeadLocationAndParseService extends Service {
                 }
             }
         });
-        if (!deleted){
-            Log.d(Boss.LOG_TAG+"LOCATION_SERVICE","Nothing was deleted");
-        }
     }
 
 

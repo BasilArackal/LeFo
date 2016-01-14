@@ -66,6 +66,8 @@ public class Lead extends AppCompatActivity {
         CON = this;
         currentLeadActivity = this;
 
+        Boss.notified=false;
+
 
         SESSION_CODE = Boss.genLeFoCode() + "";
 
@@ -182,6 +184,7 @@ public class Lead extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (isSessionOn)
         Boss.deleteSession(this);
         isSessionOn = false;
         SESSION_CODE = null;

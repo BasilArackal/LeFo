@@ -78,6 +78,8 @@
     <string name="title_activity_lead">Lead</string>
     <string name="menu_item_refresh">Refresh</string>
     <string name="menu_item_share">Share</string>
+    <string name="hintCodeEntry">Enter Shared Code Here</string>
+    <string name="scanQRbuttonTxt">Scan QR Code</string>
 
 
 </resources>

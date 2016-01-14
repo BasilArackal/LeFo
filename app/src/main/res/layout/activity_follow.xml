@@ -44,6 +44,7 @@
         android:id="@+id/startjourneyBTN"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
+        android:onClick="startJourney"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="59dp"
         android:layout_marginStart="59dp" />
@@ -51,11 +52,22 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scan QR Code"
+        android:text="@string/scanQRbuttonTxt"
         android:id="@+id/scanqrfollowBTN"
+        android:onClick="openQRScanner"
         android:layout_below="@+id/startjourneyBTN"
         android:layout_alignLeft="@+id/startjourneyBTN"
         android:layout_alignStart="@+id/startjourneyBTN"
         android:layout_marginTop="50dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:hint="@string/hintCodeEntry"
+        android:id="@+id/codeTxt"
+        android:layout_above="@+id/startjourneyBTN"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
