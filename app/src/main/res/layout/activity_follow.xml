@@ -40,7 +40,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Journey"
+        android:text="@string/start_journey_follower"
         android:id="@+id/startjourneyBTN"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"

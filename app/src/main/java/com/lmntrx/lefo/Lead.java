@@ -249,7 +249,4 @@ public class Lead extends AppCompatActivity {
         }
     };
 
-    public static void makeToast(String s, int length) {
-        Toast.makeText(CON, s, length).show();
-    }
 }

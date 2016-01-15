@@ -69,6 +69,7 @@ public class LeadLocationAndParseService extends Service {
         return null;
     }
 
+    @SuppressLint("LongLogTag")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -123,6 +124,7 @@ public class LeadLocationAndParseService extends Service {
         LeadLocationAndParseService.this.stopSelf();
     }
 
+    @SuppressLint("LongLogTag")
     private void updateCurrentLocation() {
         Log.d(Boss.LOG_TAG + "Update", "Update Current Location Called");
         if (!isSynced) {
@@ -171,6 +173,7 @@ public class LeadLocationAndParseService extends Service {
             }
         }
 
+        @SuppressLint("LongLogTag")
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
             switch (i){
@@ -242,6 +245,7 @@ public class LeadLocationAndParseService extends Service {
         });
     }
 
+    @SuppressLint("LongLogTag")
     private void syncDB(Location location) {
         if ((!(SESSION_CODE + "").isEmpty() || SESSION_CODE != 1) && location != null) {
             Log.d(Boss.LOG_TAG + "SYNC", "Syncing to ParseDB");
@@ -274,6 +278,7 @@ public class LeadLocationAndParseService extends Service {
         super.onDestroy();
     }
 
+    @SuppressLint("LongLogTag")
     private void deleteSession() {
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "deleteSession() called");
         ParseQuery query = new ParseQuery(Boss.PARSE_CLASS);

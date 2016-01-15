@@ -1,11 +1,14 @@
 package com.lmntrx.lefo;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
@@ -22,11 +25,12 @@ public class Scanner extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
+
         scannerLiveView=(ScannerLiveView)findViewById(R.id.scanner);
         scannerLiveView.setScannerViewEventListener(new ScannerLiveView.ScannerViewEventListener() {
             @Override
             public void onScannerStarted(ScannerLiveView scanner) {
-                Log.d(Boss.LOG_TAG+"Scanner","Scanning");
+                Log.d(Boss.LOG_TAG + "Scanner", "Scanning");
             }
 
             @Override
@@ -36,22 +40,32 @@ public class Scanner extends AppCompatActivity {
 
             @Override
             public void onScannerError(Throwable err) {
-                Toast.makeText(Scanner.this,err.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(Scanner.this, err.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e(Boss.LOG_TAG + "Scanner", err.getMessage());
             }
 
             @Override
             public void onCodeScanned(String data) {
-                SESSION_CODE=data;
-                if (Boss.verifySessionCode(SESSION_CODE)==Boss.SESSION_APPROVED){
-                        //open maps
-                }else {
-                        //alert wrong code
+                SESSION_CODE = data;
+                if (Boss.verifySessionCode(SESSION_CODE) == Boss.SESSION_APPROVED) {
+                    Vibrator vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+                    vibrator.vibrate(50);
+                    startMaps();
+                    Scanner.this.finish();
+                } else {
+                    Toast.makeText(Scanner.this, "Validation Error, Please scan a valid LeFo QR Code\n" + data, Toast.LENGTH_LONG).show();
                 }
-                Toast.makeText(Scanner.this,SESSION_CODE,Toast.LENGTH_LONG).show();
             }
         });
 
 
+
+    }
+
+    private void startMaps() {
+        Intent maps=new Intent(this,MapsActivity.class);
+        maps.putExtra("SESSION_CODE",SESSION_CODE);
+        startActivity(maps);
     }
 
     @Override
@@ -66,13 +80,15 @@ public class Scanner extends AppCompatActivity {
         ZXDecoder decoder=new ZXDecoder();
         decoder.setScanAreaPercent(0.8);
         scannerLiveView.setDecoder(decoder);
-        scannerLiveView.startScanner();
+
+        try {
+            scannerLiveView.startScanner();
+        }catch (Exception e){
+            Toast.makeText(this,"This device does not have a camera",Toast.LENGTH_LONG).show();
+            Scanner.this.finish();
+        }
 
         super.onResume();
-
-    }
-
-    private void launchMap(){
 
     }
 

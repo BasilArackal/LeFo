@@ -36,7 +36,7 @@ public class Boss {
 
     public static final String LOG_TAG="LeFoLog ";
 
-    public static int SESSION_APPROVED=2;
+    public static int SESSION_APPROVED=2,VERIFIED_STATUS=1;
 
     static Intent locationService;
 
@@ -56,6 +56,8 @@ public class Boss {
     public static final String KEY_DEVICE = "deviceName";
     public static final String KEY_isActive = "isActive";
     public static final String KEY_LOCATION = "LOCATION";
+
+    public static String OBJECT_ID;
 
     Notification notification=null;
     static NotificationManager notificationManager=null;
@@ -235,9 +237,33 @@ public class Boss {
         Lead.fab.setImageResource(R.drawable.ic_media_play);
     }
 
-    public static int verifySessionCode(String session_code) {
-        //verify session code here
+    public static int verifySessionCode(final String session_code) {
+        final int integer_code;
+        try{
+            integer_code=Integer.parseInt(session_code);
+        }catch (Exception e){
+            return 1;
+        }
+        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(PARSE_CLASS);
+        queryID.whereEqualTo(KEY_QRCODE, integer_code);
+        queryID.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (parseObjects.isEmpty()) {
+                        VERIFIED_STATUS=1;
+                    } else {
+                        for (ParseObject result : parseObjects) {
+                            OBJECT_ID=result.getObjectId();
+                            VERIFIED_STATUS=2;
+                        }
+                    }
+                } else {
+                    VERIFIED_STATUS=1;
+                }
+            }
+        });
 
-        return 0;
+        return VERIFIED_STATUS;
     }
 }
