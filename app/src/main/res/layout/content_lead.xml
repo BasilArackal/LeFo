@@ -4,10 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.lmntrx.lefo.Lead"
     tools:showIn="@layout/activity_lead">
@@ -29,14 +25,16 @@
             android:layout_weight="1"
             android:id="@+id/tab1"
             android:text="@string/journeyTab"
-            android:background="@color/wallet_dim_foreground_holo_dark"/>
+            android:background="@color/colorPrimary"/>
 
         <Button
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab2"
-            android:text="@string/livetrackTab" />
+            android:text="@string/livetrackTab"
+            android:background="@color/colorPrimary"/>
 
     </LinearLayout>
     <LinearLayout

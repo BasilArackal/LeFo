@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="windowBackground">#E0E0E0</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="textColorSecondary">#4A4A4A</color>
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#E64A19</color>
+    <color name="colorAccent">#03A9F4</color>
+    <color name="colorDivider">#4A4A4A</color>
+
+    <color name="windowBackground_darkTheme">#303030</color>
+    <color name="navigationBarColor_darkTheme">#000000</color>
+    <color name="textColorPrimary_darkTheme">#FFFFFF</color>
+    <color name="textColorSecondary_darkTheme">#BAB9B9</color>
+    <color name="colorPrimary_darkTheme">#FF5722</color>
+    <color name="colorPrimaryDark_darkTheme">#E64A19</color> 
+    <color name="colorAccent_darkTheme">#1976D2</color>
+     <color name="colorDivider_darkTheme">#BAB9B9</color>
+
+
+
 </resources>

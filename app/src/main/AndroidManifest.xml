@@ -20,7 +20,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Follow" />
-        <activity android:name=".livetrack" />
+        <activity android:name=".Livetrack" />
         <activity android:name=".Followers" />
         <activity
             android:name=".SettingsActivity"
@@ -30,7 +30,7 @@
                 android:value="com.lmntrx.lefo.Home" />
         </activity>
         <activity
-            android:name=".splashscreen"
+            android:name=".SplashScreen"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

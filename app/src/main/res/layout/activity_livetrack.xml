@@ -3,11 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.lmntrx.lefo.livetrack">
+    tools:context=".Livetrack">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -18,14 +14,15 @@
         android:weightSum="2"
         android:gravity="center_horizontal"
         android:background="@color/common_action_bar_splitter"
-        android:id="@+id/linearLayout">
+        android:id="@+id/tabbedLinearLayout">
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab1"
-            android:text="Jouney"/>
+            android:text="Journey"
+            android:background="@color/colorPrimary"/>
 
         <Button
             android:layout_width="match_parent"
@@ -33,27 +30,91 @@
             android:layout_weight="1"
             android:id="@+id/tab2"
             android:text="Live Track"
-            android:background="@color/wallet_dim_foreground_holo_dark" />
+            android:background="@color/colorPrimary" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/switchLinearLayout"
+        android:orientation="horizontal"
+
+        android:layout_below="@id/tabbedLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="Live Track Disabled"
+            android:layout_weight="3"/>
+        <Switch
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/liveTrackSwitch"
+            android:layout_weight="2"
+
+
+            android:checked="false" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/liveTrackTextView1"
+        android:gravity="center"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:layout_below="@+id/switchLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="When disabled, no one can track you in live track mode. Note: Does not apply to Journey mode."/>
+
+    <View
+        android:id="@+id/liveTrackDivider1"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/liveTrackTextView1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorDivider"></View>
+
+    <TextView
+        android:id="@+id/liveTrackTextView2"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@id/liveTrackDivider1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Live Track Your Friends"
+        android:textSize="25sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/liveTrackTextView3"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/liveTrackTextView2"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ask your friend to enable livetrack inorder to track them"/>
+
+    <EditText
+        android:id="@+id/liveTrackEditText1"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/liveTrackTextView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Live Track Code"
+        android:gravity="left"
+        android:paddingLeft="@dimen/activity_horizontal_margin"/>
+
     <Button
+        android:layout_below="@+id/liveTrackEditText1"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Livetrack"
-        android:id="@+id/startlivetrackBTN"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/startLiveTrackBTN"
+
         android:layout_centerHorizontal="true" />
-
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enable/Disable"
-        android:id="@+id/livetrackSWITCH"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignRight="@+id/linearLayout"
-        android:layout_alignEnd="@+id/linearLayout"
-        android:layout_marginTop="77dp"
-        android:checked="false" />
-
 </RelativeLayout>

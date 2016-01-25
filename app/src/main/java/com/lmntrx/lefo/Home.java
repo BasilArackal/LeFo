@@ -1,7 +1,5 @@
 package com.lmntrx.lefo;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.parse.ParseAnalytics;
 
@@ -28,6 +25,7 @@ public class Home extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -141,7 +139,7 @@ public class Home extends AppCompatActivity
     }
 
     public void startLiveTrack(View v) {
-        Intent intent = new Intent(this, livetrack.class);
+        Intent intent = new Intent(this, Livetrack.class);
         startActivity(intent);
     }
 
