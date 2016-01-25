@@ -1,40 +1,49 @@
 package com.lmntrx.lefo;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Follow extends AppCompatActivity {
 
-    public static String SESSION_CODE="1";
-    TextView codeTXT;
+    public String SESSION_CODE=null;
+    EditText codeTXT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follow);
-        codeTXT=(TextView)findViewById(R.id.sessionCodeTxt);
+        codeTXT=(EditText)findViewById(R.id.codeTxt);
     }
 
     public void startJourney(View view) {
-        SESSION_CODE=codeTXT.getText().toString().trim();
+        Toast toast=Toast.makeText(this,"Please enter a session code",Toast.LENGTH_LONG);
+        try {
+            SESSION_CODE=codeTXT.getText()+"";
+            verifyAndStart();
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG+"Follow","NullPointerException Code Empty");
+            inform("Please enter a session code");
+        }
+    }
+
+    private void verifyAndStart() {
         if(!SESSION_CODE.isEmpty()){
             if (Boss.verifySessionCode(SESSION_CODE)==Boss.SESSION_APPROVED){
                 startMaps(SESSION_CODE);
             }else {
-                Toast.makeText(this,"Enter a valid LeFo Session Code",Toast.LENGTH_LONG).show();
+                inform("Enter a valid LeFo Session Code");
             }
         }else {
-            Toast.makeText(this,"Please enter a session code",Toast.LENGTH_LONG).show();
+            //Toast.makeText(this,"Please enter a session code",Toast.LENGTH_LONG).show();
+            inform("Please enter a session code");
         }
     }
 
@@ -46,6 +55,12 @@ public class Follow extends AppCompatActivity {
     }
 
     public void openQRScanner(View view) {
-        startActivity(new Intent(this,Scanner.class));
+        startActivity(new Intent(this, Scanner.class));
+    }
+
+    private void inform(String msg){
+        View view=findViewById(R.id.codeTxt).getRootView();
+        Snackbar snackbar=Snackbar.make(view,msg,Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

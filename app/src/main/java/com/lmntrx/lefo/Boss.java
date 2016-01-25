@@ -59,7 +59,7 @@ public class Boss {
 
     public static String OBJECT_ID;
 
-    Notification notification=null;
+    static Notification notification=null;
     static NotificationManager notificationManager=null;
 
     public static boolean notified=false;
@@ -131,7 +131,6 @@ public class Boss {
         locationService=new Intent(context,LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE",session_code);
         context.startService(locationService);
-        notifySessionRunning(context);
     }
 
     public static void deleteSession(Context context) {
@@ -147,7 +146,7 @@ public class Boss {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void notifySessionRunning(Context context){
+    public static void notifySessionRunning(Context context){
         Lead.canRefresh=false;
         //Intent for direct action from notification
         Intent deleteIntent=new Intent(context,CloseLeFoSessionReceiver.class);

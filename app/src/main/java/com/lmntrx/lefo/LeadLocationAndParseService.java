@@ -33,8 +33,9 @@ public class LeadLocationAndParseService extends Service {
 
     //GPS LOST Token
     public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
-    public static final String CANNOT_LOCATE="com.lmntrx.CANNOT_LOCATE";
-    public static final String NO_LOCATION_PERMISSION="com.lmntrx.NO_LOCATION_PERMISSION";
+    public static final String CANNOT_LOCATE = "com.lmntrx.CANNOT_LOCATE";
+    public static final String NO_LOCATION_PERMISSION = "com.lmntrx.NO_LOCATION_PERMISSION";
+    public static final String GOT_YA = "com.lmntrx.GOT_YA";
 
     //Parse ObjectID
     public static String objectId = null;
@@ -58,9 +59,9 @@ public class LeadLocationAndParseService extends Service {
     //variable for holding Code
     public int SESSION_CODE = 1;
 
-    int count=0;
+    int count = 0;
 
-    boolean exitCalled=false;
+    boolean exitCalled = false;
 
 
     @Nullable
@@ -84,7 +85,27 @@ public class LeadLocationAndParseService extends Service {
         locationListener = new LeFo_LocationListener();
 
 
-        new Thread(new Runnable() {
+        //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            alertNoPermission();
+            Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
+            exit();
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);current_location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (current_location != null){
+                syncDB(current_location);
+            }else {
+                current_location=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (current_location != null){
+                    syncDB(current_location);
+                }else {
+                    alertCannotLocate();
+                }
+            }
+        }
+
+
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!isSynced) {
@@ -101,7 +122,7 @@ public class LeadLocationAndParseService extends Service {
                     }
                 }
             }
-        }).run();
+        }).run();*/
 
 
         return super.onStartCommand(intent, flags, startId);
@@ -109,18 +130,18 @@ public class LeadLocationAndParseService extends Service {
 
 
     public void exit() {
-        Log.d(Boss.LOG_TAG,"exit() called");
+        Log.d(Boss.LOG_TAG, "exit() called");
         stop = false;
         isSynced = false;
         objectId = null;
         Boss.removeNotification();
-        Lead.isSessionOn=false;
+        Lead.isSessionOn = false;
         Boss.revertFAB();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.removeUpdates(locationListener);
-        }else locationManager.removeUpdates(locationListener);
+        } else locationManager.removeUpdates(locationListener);
         deleteSession();
-        exitCalled=true;
+        exitCalled = true;
         LeadLocationAndParseService.this.stopSelf();
     }
 
@@ -129,20 +150,19 @@ public class LeadLocationAndParseService extends Service {
         Log.d(Boss.LOG_TAG + "Update", "Update Current Location Called");
         if (!isSynced) {
 
-            //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 alertNoPermission();
                 Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
-                stop=true;
+                stop = true;
             } else {
                 if ((current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null) {
                     if ((current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)) == null) {
-                        if (count<1){
+                        if (count < 1) {
                             Log.e(Boss.LOG_TAG + "Location", "Couldn't Locate");
                             count++;
-                        }else {
+                        } else {
                             alertCannotLocate();
-                            stop=true;
+                            stop = true;
                         }
                     } else
                         syncDB(current_location);
@@ -154,20 +174,22 @@ public class LeadLocationAndParseService extends Service {
     }
 
     private void alertNoPermission() {
-        Intent noPermission=new Intent(NO_LOCATION_PERMISSION);
+        Intent noPermission = new Intent(NO_LOCATION_PERMISSION);
         LeadLocationAndParseService.this.sendBroadcast(noPermission);
-        Log.e(Boss.LOG_TAG,"alertNoPermssion() Called");
+        Log.e(Boss.LOG_TAG, "alertNoPermssion() Called");
     }
 
 
     class LeFo_LocationListener implements LocationListener {
+
+
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
                 current_location = location;
                 //Registering new location in database
                 if (old_location != current_location) {
-                    updateParseDB(SESSION_CODE, location);
+                    updateParseDB(SESSION_CODE);
                     old_location = current_location;
                 }
             }
@@ -176,11 +198,18 @@ public class LeadLocationAndParseService extends Service {
         @SuppressLint("LongLogTag")
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
-            switch (i){
-                case LocationProvider.AVAILABLE : Log.i(Boss.LOG_TAG+"LocationListener","GPS Available"); break;
-                case LocationProvider.OUT_OF_SERVICE : Log.e(Boss.LOG_TAG+"LocationListener","GPS Out Of Service"); break;
-                case LocationProvider.TEMPORARILY_UNAVAILABLE : Log.w(Boss.LOG_TAG+"LocationListener","GPS Temporarily Unavailable"); break;
-                default: Log.e(Boss.LOG_TAG + "LocationListener", "Status changed");
+            switch (i) {
+                case LocationProvider.AVAILABLE:
+                    Log.i(Boss.LOG_TAG + "LocationListener", "GPS Available");
+                    break;
+                case LocationProvider.OUT_OF_SERVICE:
+                    Log.e(Boss.LOG_TAG + "LocationListener", "GPS Out Of Service");
+                    break;
+                case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                    Log.w(Boss.LOG_TAG + "LocationListener", "GPS Temporarily Unavailable");
+                    break;
+                default:
+                    Log.e(Boss.LOG_TAG + "LocationListener", "Status changed");
             }
 
         }
@@ -202,47 +231,57 @@ public class LeadLocationAndParseService extends Service {
         LeadLocationAndParseService.this.sendBroadcast(disabledGps);
     }
 
-    private void alertCannotLocate(){
-        Intent cannotLocate=new Intent(CANNOT_LOCATE);
+    private void alertCannotLocate() {
+        Intent cannotLocate = new Intent(CANNOT_LOCATE);
         LeadLocationAndParseService.this.sendBroadcast(cannotLocate);
     }
 
-    private void updateParseDB(int session_code, Location location) {
+    private void alertGotYou() {
+        Intent cannotLocate = new Intent(GOT_YA);
+        LeadLocationAndParseService.this.sendBroadcast(cannotLocate);
+        Boss.notifySessionRunning(Lead.CON);
+    }
 
-        //Object ID has to be fetched first
-        //then using it the object is updated with new location
-        Log.d(Boss.LOG_TAG + "Update", "Updating ParseDB");
-        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
-        queryID.whereEqualTo(Boss.KEY_QRCODE, session_code);
-        queryID.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject result : parseObjects) {
-                        // Retrieving objectId
-                        objectId = result.getObjectId();
-                    }
-                    // Retrieving data from object
-                    if (objectId != null) {
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_CLASS);
-                        query.getInBackground(objectId, new GetCallback<ParseObject>() {
-                            public void done(ParseObject parseUpdateObject, ParseException e) {
-                                if (e == null) {
-                                    ParseGeoPoint newGeoPoint = new ParseGeoPoint(current_location.getLatitude(), current_location.getLongitude());
-                                    parseUpdateObject.put(Boss.KEY_LOCATION, newGeoPoint);
-                                    parseUpdateObject.saveInBackground();
-                                } else {
-                                    Log.e(Boss.LOG_TAG + "Update", e.getMessage());
+    private void updateParseDB(int session_code) {
+
+        if (!isSynced) {
+            syncDB(current_location);
+        } else {
+            //Object ID has to be fetched first
+            //then using it the object is updated with new location
+            Log.d(Boss.LOG_TAG + "Update", "Updating ParseDB");
+            ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
+            queryID.whereEqualTo(Boss.KEY_QRCODE, session_code);
+            queryID.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> parseObjects, ParseException e) {
+                    if (e == null) {
+                        for (ParseObject result : parseObjects) {
+                            // Retrieving objectId
+                            objectId = result.getObjectId();
+                        }
+                        // Retrieving data from object
+                        if (objectId != null) {
+                            ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_CLASS);
+                            query.getInBackground(objectId, new GetCallback<ParseObject>() {
+                                public void done(ParseObject parseUpdateObject, ParseException e) {
+                                    if (e == null) {
+                                        ParseGeoPoint newGeoPoint = new ParseGeoPoint(current_location.getLatitude(), current_location.getLongitude());
+                                        parseUpdateObject.put(Boss.KEY_LOCATION, newGeoPoint);
+                                        parseUpdateObject.saveInBackground();
+                                    } else {
+                                        Log.e(Boss.LOG_TAG + "Update", e.getMessage());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                    } else {
+                        //Incase of an unknown error
+                        Log.e(Boss.LOG_TAG + "Update", e.getMessage());
                     }
-                } else {
-                    //Incase of an unknown error
-                    Log.e(Boss.LOG_TAG + "Update", e.getMessage());
                 }
-            }
-        });
+            });
+        }
     }
 
     @SuppressLint("LongLogTag")
@@ -256,16 +295,9 @@ public class LeadLocationAndParseService extends Service {
             parseObject.saveInBackground();
             Log.d(Boss.LOG_TAG + "SYNC", "Synced");
             isSynced = true;
+            alertGotYou();
         } else {
             Log.e(Boss.LOG_TAG + "SYNC", "Code is empty or location is empty");
-        }
-        //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            alertNoPermission();
-            Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
-            stop=true;
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
         }
     }
 
@@ -303,11 +335,6 @@ public class LeadLocationAndParseService extends Service {
             }
         });
     }
-
-
-
-
-
 
 
 }

@@ -85,8 +85,8 @@ public class Lead extends AppCompatActivity {
                     Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
-                    Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                   // Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
+                    //        .setAction("Action", null).show();
                     isSessionOn = true;
                     canRefresh = false;
                     fab.setImageResource(R.drawable.ic_menu_view);
@@ -115,6 +115,10 @@ public class Lead extends AppCompatActivity {
         IntentFilter noLocationPermission = new IntentFilter();
         noLocationPermission.addAction(LeadLocationAndParseService.NO_LOCATION_PERMISSION);
         registerReceiver(noLocationPermissionBR, noLocationPermission);
+
+        IntentFilter gotYa = new IntentFilter();
+        gotYa.addAction(LeadLocationAndParseService.GOT_YA);
+        registerReceiver(gotYaBR, gotYa);
     }
 
     @Override
@@ -194,6 +198,7 @@ public class Lead extends AppCompatActivity {
         unregisterReceiver(gpsDisabledBR);
         unregisterReceiver(cannotLocateBR);
         unregisterReceiver(noLocationPermissionBR);
+        unregisterReceiver(gotYaBR);
         super.onDestroy();
     }
 
@@ -232,7 +237,7 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             View view = fab;
-            Snackbar.make(view, "Sorry, Session Failed. We couldn't locate you. Try again later", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Couldn't locate you, try moving your device", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
         }
@@ -246,6 +251,16 @@ public class Lead extends AppCompatActivity {
             Snackbar.make(view, "Sorry, Session Failed. Please grant permission to access location and try again.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Action", null).show();
             Boss.askPermission("LOCATION");
+        }
+    };
+
+    private BroadcastReceiver gotYaBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            View view = fab;
+            Log.d(Boss.LOG_TAG, "Recieved BR");
+            Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
     };
 
