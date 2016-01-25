@@ -141,6 +141,7 @@ public class Home extends AppCompatActivity
     public void startLiveTrack(View v) {
         Intent intent = new Intent(this, Livetrack.class);
         startActivity(intent);
+        Home.this.finish();
     }
 
     @Override

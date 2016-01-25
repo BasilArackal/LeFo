@@ -20,6 +20,7 @@ public class Livetrack extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),Home.class);
                 startActivity(intent);
+                Livetrack.this.finish();
             }
         };
         tab1.setOnClickListener(button1);
