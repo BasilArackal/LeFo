@@ -54,7 +54,8 @@
             android:text="@string/leadBtn"
             android:id="@+id/leadBTN"
             android:onClick="startLead"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/textColorSecondary"/>
 
         <Button
             android:layout_width="231dp"
@@ -62,7 +63,8 @@
             android:text="@string/followbtn"
             android:id="@+id/followBTN"
             android:onClick="startFollow"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/textColorSecondary" />
 
     </LinearLayout>
 </RelativeLayout>

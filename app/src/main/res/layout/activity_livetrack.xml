@@ -44,6 +44,7 @@
         android:weightSum="5">
 
         <TextView
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -80,6 +81,7 @@
         android:background="@color/colorDivider"></View>
 
     <TextView
+
         android:id="@+id/liveTrackTextView2"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_below="@id/liveTrackDivider1"
@@ -106,7 +108,9 @@
         android:layout_height="wrap_content"
         android:hint="Enter Live Track Code"
         android:gravity="left"
-        android:paddingLeft="@dimen/activity_horizontal_margin"/>
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:editable="true"
+        android:inputType="number" />
 
     <Button
         android:layout_below="@+id/liveTrackEditText1"
@@ -115,6 +119,6 @@
         android:layout_height="wrap_content"
         android:text="Start Livetrack"
         android:id="@+id/startLiveTrackBTN"
-
+        android:textColor="@color/textColorSecondary"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

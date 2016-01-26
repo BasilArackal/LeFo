@@ -25,7 +25,7 @@ public class Home extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        //Utils.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -93,6 +93,7 @@ public class Home extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+      // int themecheck=0; // 0 for LIGHT THEME and 1 for DARK THEME
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
@@ -108,6 +109,24 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }
+
+        /*
+        else if (id == R.id.changethemetemporary){
+           // if (themecheck==0) {
+                Utils.changeToTheme(this, 1);
+             //   themecheck=1;
+            //}
+
+            //else if (themecheck==1){
+              //  Utils.changeToTheme(this, Utils.THEME_LIGHT);
+                themecheck=0;
+            }// }
+
+           */
+
+
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -140,6 +159,7 @@ public class Home extends AppCompatActivity
 
     public void startLiveTrack(View v) {
         Intent intent = new Intent(this, Livetrack.class);
+
         startActivity(intent);
         Home.this.finish();
     }

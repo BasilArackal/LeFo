@@ -1,9 +1,49 @@
 <resources>>
 
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+
+        <item name="actionBarStyle">@style/RemoveActionBarShadow</item>
+
+
+
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Do not delete these styles below: Specially made for LeFo -->
+
+
+    <style name="RemoveActionBarShadow" parent="style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="AppTheme_Dark" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary_darkTheme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_darkTheme</item>
+        <item name="colorAccent">@color/colorAccent_darkTheme</item>
+        <item name="android:windowBackground">@color/windowBackground_darkTheme</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary_darkTheme</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary_darkTheme</item>
+
+        <item name="actionBarStyle">@style/RemoveActionBarShadow</item>
+
+
+
     </style>
 </resources>

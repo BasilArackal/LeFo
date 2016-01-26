@@ -19,7 +19,8 @@
         android:onClick="guestSession"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="175dp" />
+        android:layout_marginBottom="175dp"
+        android:textColor="@color/textColorSecondary"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -30,5 +31,6 @@
         android:layout_alignTop="@+id/guestBTN"
         android:layout_alignLeft="@+id/guestBTN"
         android:layout_alignStart="@+id/guestBTN"
-        android:layout_marginTop="72dp" />
+        android:layout_marginTop="72dp"
+        android:textColor="@color/textColorSecondary"/>
 </RelativeLayout>
