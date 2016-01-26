@@ -2,6 +2,7 @@ package com.lmntrx.lefo;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.GoogleMap;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -38,7 +40,9 @@ public class Boss {
 
     public static int SESSION_APPROVED=2,VERIFIED_STATUS=1;
 
-    static Intent locationService;
+    public static int LEADER_MARKER=1, FOLLOWER_MARKER=2;
+
+    static Intent locationService, followService;
 
     //Parse Authentication Keys
     public final String PARSE_APP_KEY="U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
@@ -63,6 +67,8 @@ public class Boss {
     static NotificationManager notificationManager=null;
 
     public static boolean notified=false;
+
+    public static GoogleMap MAP;
 
 
     //Internet Connectivity Status Check Function
@@ -90,7 +96,7 @@ public class Boss {
         }
     }
 
-    public String getDeviceName() {
+    public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         String no=Build.ID;
@@ -129,7 +135,7 @@ public class Boss {
 
     public void startSession(Context context, String session_code) {
         locationService=new Intent(context,LeadLocationAndParseService.class);
-        locationService.putExtra("SESSION_CODE",session_code);
+        locationService.putExtra("SESSION_CODE", session_code);
         context.startService(locationService);
     }
 
@@ -200,7 +206,7 @@ public class Boss {
     }
 
 
-    public static void buildAlertMessageLostGps(final Context context) {
+    public static void buildAlertMessageLostGps(final Context context, final Activity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
@@ -214,20 +220,25 @@ public class Boss {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                         Boss.deleteSession(context);
-                        Lead.currentLeadActivity.finish();
+                        activity.finish();
                     }
                 });
         final AlertDialog alert = builder.create();
         alert.show();
     }
 
-    public static void askPermission(String name) {
+    public static void askPermission(String name,Activity activity) {
 
         switch (name){
             case "LOCATION":{
-                ActivityCompat.requestPermissions(Lead.currentLeadActivity,
+                ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0);
+                        0); break;
+            }
+            case "CAMERA":{
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.CAMERA},
+                        0); break;
             }
         }
     }
@@ -250,19 +261,42 @@ public class Boss {
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (parseObjects.isEmpty()) {
-                        VERIFIED_STATUS=1;
+                        VERIFIED_STATUS = 1;
                     } else {
                         for (ParseObject result : parseObjects) {
-                            OBJECT_ID=result.getObjectId();
-                            VERIFIED_STATUS=2;
+                            OBJECT_ID = result.getObjectId();
+                            VERIFIED_STATUS = 2;
                         }
                     }
                 } else {
-                    VERIFIED_STATUS=1;
+                    VERIFIED_STATUS = 1;
                 }
             }
         });
 
         return VERIFIED_STATUS;
+    }
+
+    public static void startFollowSession(String session_code, String object_id, Context context) {
+
+        followService=new Intent(context,FollowLocationAndParseService.class);
+        followService.putExtra("SESSION_CODE", session_code);
+        followService.putExtra("OBJECT_ID", object_id);
+        context.startService(followService);
+
+    }
+
+    public static void closeFollowSession(Context context) {
+        context.stopService(followService);
+    }
+
+    public static void registerFollower(String SESSION_CODE, Boolean isActive) {
+
+        ParseObject parseObject = new ParseObject(PARSE_FCLASS);
+        parseObject.put(KEY_CON_CODE, SESSION_CODE);
+        parseObject.put(KEY_DEVICE, getDeviceName());
+        parseObject.put(KEY_isActive, isActive);
+        parseObject.saveInBackground();
+
     }
 }

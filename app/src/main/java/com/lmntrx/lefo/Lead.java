@@ -229,7 +229,7 @@ public class Lead extends AppCompatActivity {
     private BroadcastReceiver gpsDisabledBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Boss.buildAlertMessageLostGps(context);
+            Boss.buildAlertMessageLostGps(context,currentLeadActivity);
         }
     };
 
@@ -250,7 +250,7 @@ public class Lead extends AppCompatActivity {
             Log.d(Boss.LOG_TAG, "Recieved BR");
             Snackbar.make(view, "Sorry, Session Failed. Please grant permission to access location and try again.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Action", null).show();
-            Boss.askPermission("LOCATION");
+            Boss.askPermission("LOCATION",currentLeadActivity);
         }
     };
 

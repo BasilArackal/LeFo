@@ -83,6 +83,7 @@
     <string name="toggle_flash">Toggle Flash</string>
     <string name="start_journey_follower">Start Journey</string>
     <string name="title_activity_maps">Map</string>
+    <string name="qrcode_scan_hint">Frame the QR code in the viewfinder screen</string>
 
 
 </resources>

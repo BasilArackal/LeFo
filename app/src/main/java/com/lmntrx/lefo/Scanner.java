@@ -40,21 +40,34 @@ public class Scanner extends AppCompatActivity {
 
             @Override
             public void onScannerError(Throwable err) {
-                Toast.makeText(Scanner.this, err.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(Scanner.this, "Cannot Open Camera. Try restarting the device.", Toast.LENGTH_LONG).show();
                 Log.e(Boss.LOG_TAG + "Scanner", err.getMessage());
             }
 
             @Override
             public void onCodeScanned(String data) {
                 SESSION_CODE = data;
-                if (Boss.verifySessionCode(SESSION_CODE) == Boss.SESSION_APPROVED) {
-                    Vibrator vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
-                    vibrator.vibrate(50);
-                    startMaps();
-                    Scanner.this.finish();
-                } else {
-                    Toast.makeText(Scanner.this, "Validation Error, Please scan a valid LeFo QR Code\n" + data, Toast.LENGTH_LONG).show();
-                }
+                Thread thread=new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int status=Boss.verifySessionCode(SESSION_CODE);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (status == Boss.SESSION_APPROVED) {
+                            Vibrator vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+                            vibrator.vibrate(50);
+                            startMaps();
+                            Scanner.this.finish();
+                        } else {
+                            Toast.makeText(Scanner.this, "Validation Error, Please scan a valid LeFo QR Code\n" + SESSION_CODE, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                thread.run();
+
             }
         });
 
@@ -117,6 +130,10 @@ public class Scanner extends AppCompatActivity {
 
     private void toggleFlash() {
         flashStatus = !flashStatus;
-        scannerLiveView.getCamera().getController().switchFlashlight(flashStatus);
+        try{
+            scannerLiveView.getCamera().getController().switchFlashlight(flashStatus);
+        }catch (Exception e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
     }
 }
