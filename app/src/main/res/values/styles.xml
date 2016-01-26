@@ -1,6 +1,7 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~LIGHT THEME~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- Base application theme. AppCompat Light Theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -9,30 +10,27 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
-
         <item name="actionBarStyle">@style/RemoveActionBarShadow</item>
-
-       
-        
     </style>
+    <!-- Base application theme Ends. -->
 
-    <style name="AppTheme.NoActionBar">
+    <!-- Base Application Theme : Remove Actionbar theme -->
+    <style name="AppTheme_Light_NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <!-- Remove Actionbar theme -->
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DARK THEME~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-    
-    <!-- Do not delete these styles below: Specially made for LeFo -->
-
-
-    <style name="RemoveActionBarShadow" parent="style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="elevation">0dp</item>
-    </style>
-
-    <style name="AppTheme_Dark" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Application theme. AppCompat Dark Theme -->
+    <style name="AppTheme_Dark" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary_darkTheme</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_darkTheme</item>
@@ -40,11 +38,48 @@
         <item name="android:windowBackground">@color/windowBackground_darkTheme</item>
         <item name="android:textColorPrimary">@color/textColorPrimary_darkTheme</item>
         <item name="android:textColorSecondary">@color/textColorSecondary_darkTheme</item>
-
         <item name="actionBarStyle">@style/RemoveActionBarShadow</item>
-
-
-
     </style>
+    <!-- Application theme. AppCompat Dark Theme Ends-->
+
+    <!-- Application theme. AppCompat Dark :Remove Action Bar Theme -->
+    <style name="AppTheme_Dark_NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary_darkTheme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_darkTheme</item>
+        <item name="colorAccent">@color/colorAccent_darkTheme</item>
+        <item name="android:windowBackground">@color/windowBackground_darkTheme</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary_darkTheme</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary_darkTheme</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <!-- Remove Actionbar theme Ends-->
+
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MISC THEMES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Remove ActionBarShadow for both Light and Dark Themes -->
+    <style name="RemoveActionBarShadow" parent="style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="elevation">0dp</item>
+    </style>
+    <!-- Remove ActionBarShadow for both Light and Dark Themes : Ends -->
+
+
+
+
+    <!-- Toolbar Themes -->
+   <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+   <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!-- Toolbar Themes -->
+
+    <!-- Base Application Theme : Remove Actionbar theme -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <!-- Remove Actionbar theme -->
+
+
 
 </resources>

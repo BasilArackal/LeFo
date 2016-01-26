@@ -8,7 +8,8 @@ import android.support.annotation.RequiresPermission;
 
 public class Utils {
     private static int sTheme;
-
+    public final static int SET_THEME_T0_LIGHT=0;
+    public final static int SET_THEME_TO_DARK=1;
 
 
     /** * Set the theme of the Activity, and restart it by creating a new Activity of the same type. */
@@ -22,8 +23,8 @@ public class Utils {
     public static void onActivityCreateSetTheme(Activity activity) {
         switch (sTheme)
         { default:
-            case 0: activity.setTheme(R.style.AppTheme); break;
-            case 1: activity.setTheme(R.style.AppTheme_Dark); break;
+            case 0: activity.setTheme(R.style.AppTheme_Light_NoActionBar); break;
+            case 1: activity.setTheme(R.style.AppTheme_Dark_NoActionBar); break;
             } } }
 
 

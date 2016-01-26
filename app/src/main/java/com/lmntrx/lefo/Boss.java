@@ -36,6 +36,8 @@ import java.util.Random;
 
 public class Boss {
 
+    public static boolean DarkTheme=false;
+
     public static final String LOG_TAG="LeFoLog ";
 
     public static int SESSION_APPROVED=2,VERIFIED_STATUS=1;

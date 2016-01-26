@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 
 import com.parse.ParseAnalytics;
 
+// extending from just Activity removes Actionbar automatically. extending from AppCompatActivity includes Actionbar
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -25,10 +27,11 @@ public class Home extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Utils.onActivityCreateSetTheme(this);
+        Utils.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         boss.initializeParse(this);
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
@@ -93,7 +96,7 @@ public class Home extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-      // int themecheck=0; // 0 for LIGHT THEME and 1 for DARK THEME
+       int themecheck=0; // 0 for LIGHT THEME and 1 for DARK THEME
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
@@ -110,19 +113,19 @@ public class Home extends AppCompatActivity
 
         }
 
-        /*
+     //   /*
         else if (id == R.id.changethemetemporary){
-           // if (themecheck==0) {
-                Utils.changeToTheme(this, 1);
-             //   themecheck=1;
-            //}
+            if (!boss.DarkTheme) {
+                Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK);  // 1 means dark theme
+                boss.DarkTheme=true;
+            }
 
-            //else if (themecheck==1){
-              //  Utils.changeToTheme(this, Utils.THEME_LIGHT);
-                themecheck=0;
-            }// }
+            else {
+               Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT); // 0 is light theme
+                boss.DarkTheme=false;
+            } }
 
-           */
+        //   */
 
 
 
