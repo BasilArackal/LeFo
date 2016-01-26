@@ -26,6 +26,7 @@
             android:layout_weight="1"
             android:id="@+id/tab1"
             android:text="@string/journeyTab"
+            android:textColor="@color/textColorPrimary"
             android:background="@color/colorPrimary"/>
 
         <Button
@@ -35,6 +36,7 @@
             android:id="@+id/tab2"
             android:onClick="startLiveTrack"
             android:text="@string/livetrackTab"
+            android:textColor="@color/textColorPrimary"
             android:background="@color/colorPrimary"/>
 
     </LinearLayout>
