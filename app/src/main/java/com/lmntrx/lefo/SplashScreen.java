@@ -22,12 +22,13 @@ public class SplashScreen extends Activity {
 
     public void guestSession(View view) {
         Intent intent=new Intent(this,Home.class);
+
         startActivity(intent);
         this.finish();
     }
 
 
     public void login(View view) {
-        Toast.makeText(this,"Comming Soon",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"Coming Soon",Toast.LENGTH_LONG).show();
     }
 }
