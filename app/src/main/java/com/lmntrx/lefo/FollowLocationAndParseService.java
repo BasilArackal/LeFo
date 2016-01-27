@@ -272,32 +272,42 @@ public class FollowLocationAndParseService extends Service {
     }
 
 
-    public static void updateFollowerStatus() {
+    public static void updateFollowerStatus(final Boolean status,String session_code) {
+        Log.d(Boss.LOG_TAG,"Updating Follower Status "+status);
         ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_FCLASS);
-        queryID.whereEqualTo(Boss.KEY_CON_CODE, SESSION_CODE);
+        queryID.whereEqualTo(Boss.KEY_CON_CODE, session_code);
         queryID.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
+                    Log.d(Boss.LOG_TAG,"Test Log");
                     for (ParseObject result : parseObjects) {
+                        Log.d(Boss.LOG_TAG,"Test Log2 "+result.getObjectId());
                         // Retrieving objectId
                         FOBJECT_ID = result.getObjectId();
                     }
+
                     // Retrieving data from object
                     if (FOBJECT_ID != null) {
                         ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FCLASS);
                         query.getInBackground(FOBJECT_ID, new GetCallback<ParseObject>() {
                             public void done(ParseObject parseUpdateObject, ParseException e) {
                                 if (e == null) {
-                                    parseUpdateObject.put(Boss.KEY_isActive, MapsActivity.isActive);
+                                    Log.d(Boss.LOG_TAG,"Test Log3 "+parseUpdateObject.getObjectId());
+                                    parseUpdateObject.put(Boss.KEY_isActive, status);
                                     parseUpdateObject.saveInBackground();
                                 } else {
+                                    Log.e(Boss.LOG_TAG+"FLPS",e.getMessage());
                                 }
                             }
                         });
+                    }else {
+                        Log.e(Boss.LOG_TAG+"FLPS","Null ObjectID");
                     }
+
+
                 } else {
-                    //Incase of an unknown error
+                    Log.e(Boss.LOG_TAG+"FLPS",e.getMessage());
                 }
             }
         });

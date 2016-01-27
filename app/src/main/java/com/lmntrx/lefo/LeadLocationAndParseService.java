@@ -145,34 +145,6 @@ public class LeadLocationAndParseService extends Service {
         LeadLocationAndParseService.this.stopSelf();
     }
 
-    @SuppressLint("LongLogTag")
-    private void updateCurrentLocation() {
-        Log.d(Boss.LOG_TAG + "Update", "Update Current Location Called");
-        if (!isSynced) {
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                alertNoPermission();
-                Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
-                stop = true;
-            } else {
-                if ((current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)) == null) {
-                    if ((current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)) == null) {
-                        if (count < 1) {
-                            Log.e(Boss.LOG_TAG + "Location", "Couldn't Locate");
-                            count++;
-                        } else {
-                            alertCannotLocate();
-                            stop = true;
-                        }
-                    } else
-                        syncDB(current_location);
-                } else
-                    syncDB(current_location);
-            }
-        }
-
-    }
-
     private void alertNoPermission() {
         Intent noPermission = new Intent(NO_LOCATION_PERMISSION);
         LeadLocationAndParseService.this.sendBroadcast(noPermission);

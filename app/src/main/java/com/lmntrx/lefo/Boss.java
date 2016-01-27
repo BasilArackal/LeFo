@@ -60,6 +60,7 @@ public class Boss {
     public static final String KEY_QRCODE = "QR_CODE";
     public static final String KEY_CON_CODE = "Con_Code";
     public static final String KEY_DEVICE = "deviceName";
+    public static final String KEY_DEVICE_ID = "deviceID";
     public static final String KEY_isActive = "isActive";
     public static final String KEY_LOCATION = "LOCATION";
 
@@ -101,11 +102,10 @@ public class Boss {
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
-        String no=Build.ID;
         if (model.startsWith(manufacturer)) {
-            return capitalize(model) + " " + no;
+            return capitalize(model);
         } else {
-            return capitalize(manufacturer) + " " + model+ " " + no;
+            return capitalize(manufacturer) + " " + model;
         }
     }
 
@@ -289,16 +289,31 @@ public class Boss {
     }
 
     public static void closeFollowSession(Context context) {
-        context.stopService(followService);
+        try{
+            context.stopService(followService);
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,"Service was not started");
+        }
     }
 
-    public static void registerFollower(String SESSION_CODE, Boolean isActive) {
+    public static void registerFollower(String SESSION_CODE, Boolean isActive, Context context) {
 
         ParseObject parseObject = new ParseObject(PARSE_FCLASS);
         parseObject.put(KEY_CON_CODE, SESSION_CODE);
         parseObject.put(KEY_DEVICE, getDeviceName());
         parseObject.put(KEY_isActive, isActive);
+        parseObject.put(KEY_DEVICE_ID,getDeviceID(context));
         parseObject.saveInBackground();
 
     }
+
+    public static String getDeviceID(Context context){
+
+        DeviceUuidFactory deviceUuidFactory=new DeviceUuidFactory(context);
+
+        return deviceUuidFactory.getDeviceUuid().toString();
+
+    }
+
 }
+
