@@ -8,6 +8,7 @@ public class Followers extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.RetainTheme(this);
         setContentView(R.layout.activity_followers);
     }
 }

@@ -28,7 +28,9 @@
 
         </activity>
         <activity android:name=".Follow" />
-        <activity android:name=".Livetrack" />
+        <activity android:name=".Livetrack"
+            android:theme="@style/AppTheme">
+        </activity>
         <activity android:name=".Followers" />
         <activity
             android:name=".SettingsActivity"

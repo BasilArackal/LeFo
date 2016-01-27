@@ -116,13 +116,13 @@ public class Home extends AppCompatActivity
      //   /*
         else if (id == R.id.changethemetemporary){
             if (!boss.DarkTheme) {
-                Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK);  // 1 means dark theme
                 boss.DarkTheme=true;
+                Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK_NOACTIONBAR);  //  means dark theme
             }
 
             else {
-               Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT); // 0 is light theme
                 boss.DarkTheme=false;
+               Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT_NOACTIONBAR); //  is light theme
             } }
 
         //   */
