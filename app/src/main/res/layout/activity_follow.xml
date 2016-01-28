@@ -13,8 +13,9 @@
         android:layout_centerHorizontal="true"
         android:weightSum="2"
         android:gravity="center_horizontal"
-        android:background="@color/common_action_bar_splitter"
-        android:id="@+id/linearLayout">
+        android:background="@drawable/adddropshadow"
+        android:id="@+id/linearLayout"
+        >
 
         <Button
             android:layout_width="match_parent"

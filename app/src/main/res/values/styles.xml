@@ -91,6 +91,10 @@
     </style>
     <!-- Remove Actionbar theme -->
 
+    <style name="AddDropShadow">
+
+    </style>
+
 
 
 </resources>
