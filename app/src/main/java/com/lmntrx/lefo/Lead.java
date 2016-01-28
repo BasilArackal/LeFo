@@ -82,8 +82,11 @@ public class Lead extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isSessionOn) {
-                    Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Intent intent=new Intent(Lead.this,Followers.class);
+                    intent.putExtra("SESSION_CODE",Integer.parseInt(SESSION_CODE));
+                    startActivity(intent);
+                    /*Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();*/
                 } else {
                    // Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
                     //        .setAction("Action", null).show();
