@@ -35,6 +35,7 @@ public class Followers extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.RetainTheme(this);
         setContentView(R.layout.activity_followers);
 
         SESSION_CODE = getIntent().getIntExtra("SESSION_CODE", -1);

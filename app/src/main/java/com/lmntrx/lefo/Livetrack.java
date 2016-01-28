@@ -11,6 +11,9 @@ public class Livetrack extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Utils.RetainTheme(this);
+
         setContentView(R.layout.activity_livetrack);
 
         Button tab1= (Button) findViewById(R.id.tab1);
