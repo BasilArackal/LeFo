@@ -315,5 +315,22 @@ public class Boss {
 
     }
 
+    public static void alertLostConnection(final Context context, final Activity activity) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Sorry, Connection was lost.")
+                .setCancelable(false)
+                .setTitle("Session Interrupted")
+                .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                        Boss.closeFollowSession(context);
+                        activity.finish();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+
+    }
 }
 

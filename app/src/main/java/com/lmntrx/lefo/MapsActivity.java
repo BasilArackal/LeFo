@@ -48,7 +48,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     static Marker leaderMarker;
     static Marker followerMarker;
 
-    Boolean updated=false;
+    Boolean updated = false;
 
     static Context context;
     static Activity activity;
@@ -76,9 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         activity = this;
         moved = false;
         isActive = true;
-        updated=false;
-
-
+        updated = false;
 
 
         SESSION_CODE = getIntent().getStringExtra("SESSION_CODE");
@@ -98,12 +96,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         noLocationPermission.addAction(FollowLocationAndParseService.NO_LOCATION_PERMISSION);
         registerReceiver(noLocationPermissionBR, noLocationPermission);
 
-        Boss.registerFollower(SESSION_CODE, isActive, context);
+        try {
+            Boss.registerFollower(SESSION_CODE, isActive, context);
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
+        }
 
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -204,9 +202,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         isActive = false;
-        if (!updated){
-        FollowLocationAndParseService.updateFollowerStatus(false,SESSION_CODE);
-        updated=true;
+        if (!updated) {
+            FollowLocationAndParseService.updateFollowerStatus(false, SESSION_CODE);
+            updated = true;
         }
 
 
@@ -231,11 +229,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onDestroy() {
 
         isActive = false;
-        if (!updated){
-            FollowLocationAndParseService.updateFollowerStatus(false,SESSION_CODE);
-            updated=true;
+        if (!updated) {
+            FollowLocationAndParseService.updateFollowerStatus(false, SESSION_CODE);
+            updated = true;
         }
-
 
 
         Boss.closeFollowSession(this);
@@ -279,8 +276,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         isActive = true;
-        updated=false;
-        FollowLocationAndParseService.updateFollowerStatus(true,SESSION_CODE);
+        updated = false;
+        FollowLocationAndParseService.updateFollowerStatus(true, SESSION_CODE);
+
+        context = this;
+        activity = this;
 
         super.onResume();
     }
@@ -292,8 +292,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setMessage("Do you want to disconnect from this session?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        FollowLocationAndParseService.updateFollowerStatus(false,SESSION_CODE);
-                        updated=true;
+                        FollowLocationAndParseService.updateFollowerStatus(false, SESSION_CODE);
+                        updated = true;
                         MapsActivity.activity.finish();
                     }
                 })

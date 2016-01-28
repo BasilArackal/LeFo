@@ -93,11 +93,21 @@ public class LeadLocationAndParseService extends Service {
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);current_location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (current_location != null){
-                syncDB(current_location);
+                try{
+                    syncDB(current_location);
+                }catch (IllegalArgumentException e){
+                    Log.e(Boss.LOG_TAG,e.getMessage());
+                    exit();
+                }
             }else {
                 current_location=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 if (current_location != null){
-                    syncDB(current_location);
+                    try{
+                        syncDB(current_location);
+                    }catch (IllegalArgumentException e){
+                        Log.e(Boss.LOG_TAG,e.getMessage());
+                        exit();
+                    }
                 }else {
                     alertCannotLocate();
                 }
