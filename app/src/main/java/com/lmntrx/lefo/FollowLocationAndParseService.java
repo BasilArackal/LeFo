@@ -296,9 +296,7 @@ public class FollowLocationAndParseService extends Service {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
-                    Log.d(Boss.LOG_TAG,"Test Log");
                     for (ParseObject result : parseObjects) {
-                        Log.d(Boss.LOG_TAG,"Test Log2 "+result.getObjectId());
                         // Retrieving objectId
                         FOBJECT_ID = result.getObjectId();
                     }
@@ -309,7 +307,6 @@ public class FollowLocationAndParseService extends Service {
                         query.getInBackground(FOBJECT_ID, new GetCallback<ParseObject>() {
                             public void done(ParseObject parseUpdateObject, ParseException e) {
                                 if (e == null) {
-                                    Log.d(Boss.LOG_TAG,"Test Log3 "+parseUpdateObject.getObjectId());
                                     parseUpdateObject.put(Boss.KEY_isActive, status);
                                     parseUpdateObject.saveInBackground();
                                 } else {

@@ -131,10 +131,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 true);
 
         mMap.getUiSettings().setMapToolbarEnabled(false);
-        mMap.setIndoorEnabled(true);
+        /*mMap.setIndoorEnabled(true);
         mMap.setTrafficEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        mMap.setBuildingsEnabled(true);
+        mMap.setBuildingsEnabled(true);*/
 
 
         leaderMarkerOptions = new MarkerOptions()
