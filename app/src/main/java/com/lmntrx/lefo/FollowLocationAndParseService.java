@@ -82,13 +82,25 @@ public class FollowLocationAndParseService extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
 
-        SESSION_CODE=Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
-        OBJECT_ID=intent.getStringExtra("OBJECT_ID");
+        try{
+            SESSION_CODE=Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
+            OBJECT_ID=intent.getStringExtra("OBJECT_ID");
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+            exit();
+        }
+
+
 
         cancelled=false;
 
-        getLeaderLocation();
-        getFollowerLocation();
+        try{
+            getLeaderLocation();
+            getFollowerLocation();
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+            Boss.alertLostConnection(MapsActivity.context,MapsActivity.activity);
+        }
 
 
         return super.onStartCommand(intent, flags, startId);
@@ -139,7 +151,11 @@ public class FollowLocationAndParseService extends Service {
 
     public void exit() {
 
-        t.cancel();
+        try {
+            t.cancel();
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
         cancelled=true;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.removeUpdates(locationListener);
