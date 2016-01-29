@@ -31,11 +31,12 @@ import java.util.List;
 public class LeadLocationAndParseService extends Service {
 
 
-    //GPS LOST Token
+    //Transaction Tokens
     public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
     public static final String CANNOT_LOCATE = "com.lmntrx.CANNOT_LOCATE";
     public static final String NO_LOCATION_PERMISSION = "com.lmntrx.NO_LOCATION_PERMISSION";
     public static final String GOT_YA = "com.lmntrx.GOT_YA";
+    public static final String SESSION_INTERRUPTED = "com.lmntrx.SESSION_INTERRUPTED";
 
     //Parse ObjectID
     public static String objectId = null;
@@ -59,8 +60,6 @@ public class LeadLocationAndParseService extends Service {
     //variable for holding Code
     public int SESSION_CODE = 1;
 
-    int count = 0;
-
     boolean exitCalled = false;
 
 
@@ -79,7 +78,13 @@ public class LeadLocationAndParseService extends Service {
 
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Service Started");
 
-        SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
+
+        try {
+            SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
@@ -114,27 +119,6 @@ public class LeadLocationAndParseService extends Service {
             }
         }
 
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!isSynced) {
-                    try {
-                        if (!stop)
-                            updateCurrentLocation();
-                        else {
-                            exit();
-                            break;
-                        }
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).run();*/
-
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -147,9 +131,9 @@ public class LeadLocationAndParseService extends Service {
         Boss.removeNotification();
         Lead.isSessionOn = false;
         Boss.revertFAB();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.removeUpdates(locationListener);
-        } else locationManager.removeUpdates(locationListener);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.removeUpdates(locationListener);
+            } else locationManager.removeUpdates(locationListener);
         deleteSession();
         exitCalled = true;
         LeadLocationAndParseService.this.stopSelf();
@@ -224,6 +208,11 @@ public class LeadLocationAndParseService extends Service {
         Boss.notifySessionRunning(Lead.CON);
     }
 
+    private void alertSessionInterupted() {
+        Intent sessionInterupted = new Intent(SESSION_INTERRUPTED);
+        LeadLocationAndParseService.this.sendBroadcast(sessionInterupted);
+    }
+
     private void updateParseDB(int session_code) {
 
         if (!isSynced) {
@@ -269,15 +258,21 @@ public class LeadLocationAndParseService extends Service {
     @SuppressLint("LongLogTag")
     private void syncDB(Location location) {
         if ((!(SESSION_CODE + "").isEmpty() || SESSION_CODE != 1) && location != null) {
-            Log.d(Boss.LOG_TAG + "SYNC", "Syncing to ParseDB");
-            ParseObject parseObject = new ParseObject(Boss.PARSE_CLASS);
-            ParseGeoPoint geoPoint = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
-            parseObject.put(Boss.KEY_QRCODE, SESSION_CODE);
-            parseObject.put(Boss.KEY_LOCATION, geoPoint);
-            parseObject.saveInBackground();
-            Log.d(Boss.LOG_TAG + "SYNC", "Synced");
-            isSynced = true;
-            alertGotYou();
+            try {
+                Log.d(Boss.LOG_TAG + "SYNC", "Syncing to ParseDB");
+                ParseObject parseObject = new ParseObject(Boss.PARSE_CLASS);
+                ParseGeoPoint geoPoint = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+                parseObject.put(Boss.KEY_QRCODE, SESSION_CODE);
+                parseObject.put(Boss.KEY_LOCATION, geoPoint);
+                parseObject.saveInBackground();
+                Log.d(Boss.LOG_TAG + "SYNC", "Synced");
+                isSynced = true;
+                alertGotYou();
+            }catch (NullPointerException e){
+                Log.e(Boss.LOG_TAG,e.getMessage());
+                alertSessionInterupted();
+                exit();
+            }
         } else {
             Log.e(Boss.LOG_TAG + "SYNC", "Code is empty or location is empty");
         }

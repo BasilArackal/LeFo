@@ -142,15 +142,21 @@ public class Boss {
     }
 
     public static void deleteSession(Context context) {
-        context.stopService(locationService);
-        //LeadLocationAndParseService.stop=true;
+        try {
+            context.stopService(locationService);
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
         removeNotification();
     }
 
     public static void removeNotification() {
-        if (notified)
-        notificationManager.cancelAll();
-        Lead.canRefresh=true;
+        try {
+            notificationManager.cancelAll();
+            Lead.canRefresh=true;
+        }catch (Exception e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -246,7 +252,11 @@ public class Boss {
     }
 
     public static void revertFAB() {
-        Lead.fab.setImageResource(R.drawable.ic_media_play);
+        try {
+            Lead.fab.setImageResource(R.drawable.ic_media_play);
+        }catch (NullPointerException e){
+         Log.e(Boss.LOG_TAG,e.getMessage());
+        }
     }
 
     public static int verifySessionCode(final String session_code) {
@@ -323,13 +333,50 @@ public class Boss {
                 .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
-                        Boss.closeFollowSession(context);
-                        activity.finish();
+                        if (context == Lead.CON){
+                            try {
+
+                                Boss.deleteSession(context);
+
+                            }catch (Exception e){
+                                try {
+                                    removeNotification();
+                                }catch (Exception e1){
+                                    System.exit(0);
+                                }
+                            }
+                            Log.e(Boss.LOG_TAG,"Here Man");
+
+                        }else {
+                            Boss.closeFollowSession(context);
+                        }
+                            activity.finish();
+                        }
                     }
-                });
+
+                    );
+                    final AlertDialog alert = builder.create();
+                    alert.show();
+
+
+                }
+
+    public static void buildAlertMessageSessionInterrupted(final Context context) {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Sorry, Connection was lost.")
+                .setCancelable(false)
+                .setTitle("Session Interrupted")
+                .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                dialog.cancel();
+                                Lead.currentLeadActivity.finish();
+                            }
+                        }
+
+                );
         final AlertDialog alert = builder.create();
         alert.show();
-
 
     }
 }

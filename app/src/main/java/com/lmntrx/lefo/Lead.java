@@ -95,7 +95,12 @@ public class Lead extends AppCompatActivity {
                     isSessionOn = true;
                     canRefresh = false;
                     fab.setImageResource(R.drawable.ic_menu_view);
-                    boss.startSession(CON, SESSION_CODE);
+                    try {
+                        boss.startSession(CON, SESSION_CODE);  //*********************************
+                    }catch (Exception n){
+                        Log.e(Boss.LOG_TAG+"Lead","Unable to start session "+n.getMessage());
+                        Boss.alertLostConnection(CON,currentLeadActivity);
+                    }
                 }
             }
         });
@@ -124,6 +129,11 @@ public class Lead extends AppCompatActivity {
         IntentFilter gotYa = new IntentFilter();
         gotYa.addAction(LeadLocationAndParseService.GOT_YA);
         registerReceiver(gotYaBR, gotYa);
+
+        IntentFilter sessionInterrupted = new IntentFilter();
+        sessionInterrupted.addAction(LeadLocationAndParseService.SESSION_INTERRUPTED);
+        registerReceiver(sessionInterruptedBR, sessionInterrupted);
+
     }
 
     @Override
@@ -204,6 +214,7 @@ public class Lead extends AppCompatActivity {
         unregisterReceiver(cannotLocateBR);
         unregisterReceiver(noLocationPermissionBR);
         unregisterReceiver(gotYaBR);
+        unregisterReceiver(sessionInterruptedBR);
         super.onDestroy();
     }
 
@@ -235,6 +246,13 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Boss.buildAlertMessageLostGps(context,currentLeadActivity);
+        }
+    };
+
+    private BroadcastReceiver sessionInterruptedBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.buildAlertMessageSessionInterrupted(context);
         }
     };
 
