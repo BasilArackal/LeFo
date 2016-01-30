@@ -82,6 +82,7 @@ public class LeadLocationAndParseService extends Service {
         try {
             SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
         }catch (NullPointerException e){
+            Boss.removeNotification();
             Log.e(Boss.LOG_TAG,e.getMessage());
         }
 
@@ -101,7 +102,7 @@ public class LeadLocationAndParseService extends Service {
                 try{
                     syncDB(current_location);
                 }catch (IllegalArgumentException e){
-                    Log.e(Boss.LOG_TAG,e.getMessage());
+                    Log.e(Boss.LOG_TAG, e.getMessage());
                     exit();
                 }
             }else {
@@ -270,6 +271,7 @@ public class LeadLocationAndParseService extends Service {
                 alertGotYou();
             }catch (NullPointerException e){
                 Log.e(Boss.LOG_TAG,e.getMessage());
+                Boss.removeNotification();
                 alertSessionInterupted();
                 exit();
             }
@@ -292,25 +294,30 @@ public class LeadLocationAndParseService extends Service {
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "deleteSession() called");
         ParseQuery query = new ParseQuery(Boss.PARSE_CLASS);
         query.whereEqualTo(Boss.KEY_QRCODE, SESSION_CODE);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> results, com.parse.ParseException e) {
-                if (e == null) {
-                    for (ParseObject result : results) {
-                        try {
-                            result.delete();
-                            Log.i(Boss.LOG_TAG + "Deleted Session", result.get(Boss.KEY_QRCODE) + "");
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
+
+        try {
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> results, com.parse.ParseException e) {
+                    if (e == null) {
+                        for (ParseObject result : results) {
+                            try {
+                                result.delete();
+                                Log.i(Boss.LOG_TAG + "Deleted Session", result.get(Boss.KEY_QRCODE) + "");
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                            result.saveInBackground();
                         }
-                        result.saveInBackground();
+                    } else {
+                        e.printStackTrace();
+                        System.out.print(e.getMessage());
                     }
-                } else {
-                    e.printStackTrace();
-                    System.out.print(e.getMessage());
                 }
-            }
-        });
+            });
+        }catch (NullPointerException e){
+            Log.e(Boss.LOG_TAG,e.getMessage());
+        }
     }
 
 

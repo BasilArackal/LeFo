@@ -155,6 +155,7 @@ public class Boss {
             notificationManager.cancelAll();
             Lead.canRefresh=true;
         }catch (Exception e){
+
             Log.e(Boss.LOG_TAG,e.getMessage());
         }
     }

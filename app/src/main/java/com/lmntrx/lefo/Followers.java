@@ -98,8 +98,6 @@ public class Followers extends AppCompatActivity {
                     SimpleAdapter adapter = new SimpleAdapter(context, infos, R.layout.followers_list_item, new String[]{Boss.KEY_DEVICE}, new int[]{R.id.list_item_field});
                     listView.setAdapter(adapter);
                 } else {
-
-                    Log.e(Boss.LOG_TAG,"Sorry "+e.getMessage());
                     e.printStackTrace();
                     System.out.print(e.getMessage());
                 }
