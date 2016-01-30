@@ -136,4 +136,24 @@ public class Scanner extends AppCompatActivity {
             Log.e(Boss.LOG_TAG,e.getMessage());
         }
     }
+
+    @Override
+    public void onBackPressed() {
+
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.run();
+
+        if (!thread.isAlive())
+            super.onBackPressed();
+
+    }
 }
