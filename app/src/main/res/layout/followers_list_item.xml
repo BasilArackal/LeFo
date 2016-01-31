@@ -4,20 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:id="@+id/statusImgView"
+        android:layout_gravity="end"
+        android:contentDescription="@string/status_icon_description"/>
+
         <TextView
             android:id="@+id/list_item_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/list_item_default_text"
             android:textSize="@dimen/abc_text_size_title_material_toolbar"
-            android:textColor="@color/textColorPrimary"/>
+            android:textColor="@color/textColorSecondary"/>
 
-    <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:id="@+id/statusImgView"
-        android:src="@drawable/offline"
-        android:layout_gravity="right"
-        android:contentDescription="@string/status_icon_description"/>
+
 
 </LinearLayout>

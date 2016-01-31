@@ -1,8 +1,9 @@
 package com.lmntrx.lefo;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -31,6 +32,10 @@ public class Home extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
 
 
         boss.initializeParse(this);
@@ -96,7 +101,6 @@ public class Home extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-       int themecheck=0; // 0 for LIGHT THEME and 1 for DARK THEME
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
@@ -113,22 +117,27 @@ public class Home extends AppCompatActivity
 
         }
 
-     //   /*
-        else if (id == R.id.changethemetemporary){
-            if (!boss.DarkTheme) {
-                boss.DarkTheme=true;
+        //   /*
+        else if (id == R.id.changethemetemporary) {
+            if (!Boss.DarkTheme) {
+                Boss.DarkTheme = true;
                 Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK_NOACTIONBAR);  //  means dark theme
-            }
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("DARK_THEME", true);
+                editor.apply();
 
-            else {
-                boss.DarkTheme=false;
-               Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT_NOACTIONBAR); //  is light theme
-            } }
+            } else {
+                Boss.DarkTheme = false;
+                Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT_NOACTIONBAR); //  is light theme
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("DARK_THEME", false);
+                editor.apply();
+            }
+        }
 
         //   */
-
-
-
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -138,10 +147,10 @@ public class Home extends AppCompatActivity
 
     public void startLead(View v) {
         if (boss.isNetworkAvailable(this)) {
-            if (boss.isGpsEnabled(this)){
+            if (boss.isGpsEnabled(this)) {
                 Intent intent = new Intent(this, Lead.class);
                 startActivity(intent);
-            }else Boss.buildAlertMessageNoGps(this);
+            } else Boss.buildAlertMessageNoGps(this);
         } else {
             Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -150,10 +159,10 @@ public class Home extends AppCompatActivity
 
     public void startFollow(View v) {
         if (boss.isNetworkAvailable(this)) {
-            if (boss.isGpsEnabled(this)){
+            if (boss.isGpsEnabled(this)) {
                 Intent intent = new Intent(this, Follow.class);
                 startActivity(intent);
-            }else Boss.buildAlertMessageNoGps(this);
+            } else Boss.buildAlertMessageNoGps(this);
         } else {
             Snackbar.make(v, "Please connect to a working network and continue!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -169,6 +178,10 @@ public class Home extends AppCompatActivity
 
     @Override
     protected void onResume() {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
+
         super.onResume();
         boss.checkGooglePlayServiceStatus(this);
     }
@@ -176,6 +189,17 @@ public class Home extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Boss.removeNotification();
+    }
+
+    @Override
+    protected void onPause() {
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("DARK_THEME", Boss.DarkTheme);
+        editor.apply();
+
+        super.onPause();
     }
 }

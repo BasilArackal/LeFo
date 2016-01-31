@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ToggleButton;
 
 /**
  * Created by ACJLionsRoar on 1/31/16.
@@ -17,8 +16,7 @@ public class Queen extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment1_follow_entercode, parentViewGroup, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment1_follow_entercode, parentViewGroup, false);
         }
 
     }
@@ -28,8 +26,7 @@ public class Queen extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment2_follow_scanqr, parentViewGroup, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment2_follow_scanqr, parentViewGroup, false);
         }
 
     }
@@ -39,12 +36,10 @@ public class Queen extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment3_livetrack_you, parentViewGroup, false);
-
-           // ToggleButton switch1 = (ToggleButton) rootView.findViewById(R.id.liveTrackSwitch) ;
+            // ToggleButton switch1 = (ToggleButton) rootView.findViewById(R.id.liveTrackSwitch) ;
 
 
-            return rootView;
+            return inflater.inflate(R.layout.fragment3_livetrack_you, parentViewGroup, false);
 
 
 
@@ -56,8 +51,7 @@ public class Queen extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment4_livetrack_others, parentViewGroup, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment4_livetrack_others, parentViewGroup, false);
         }
 
     }
