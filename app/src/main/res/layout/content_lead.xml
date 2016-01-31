@@ -17,7 +17,7 @@
         android:weightSum="2"
         android:gravity="center_horizontal"
         android:background="@color/common_action_bar_splitter"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout1">
 
         <Button
             android:layout_width="match_parent"
@@ -38,6 +38,7 @@
 
     </LinearLayout>
     <LinearLayout
+        android:layout_below="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -48,9 +49,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/qrIMG"
             android:gravity="center"
-            android:src="@drawable/loadingnew" />
+            android:src="@drawable/loadingnew"
+            />
 
-    </LinearLayout>
+
 
     <TextView
         android:layout_width="match_parent"
@@ -59,9 +61,9 @@
         android:id="@+id/sessionCodeTxt"
         android:layout_gravity="center_horizontal"
         android:clickable="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:textColor="@color/textColorSecondary"/>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -36,7 +36,7 @@ import java.util.Random;
 
 public class Boss {
 
-    public static boolean DarkTheme=false;
+    public static boolean DarkTheme=false; // <------ THIS SHOULD BE MADE A SHAREDPREFERANCE
 
     public static final String LOG_TAG="LeFoLog ";
 

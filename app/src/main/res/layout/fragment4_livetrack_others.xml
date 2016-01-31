@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="3"
+    android:background="@color/RED">
+
+    <TextView
+        android:layout_weight="1"
+        android:id="@+id/liveTrackTextView2"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Live Track Your Friends"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="25sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_weight="1"
+        android:id="@+id/liveTrackTextView3"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/liveTrackTextView2"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ask your friend to enable livetrack inorder to track them"
+        android:textColor="@color/textColorSecondary"/>
+
+    <EditText
+
+        android:id="@+id/liveTrackEditText1"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/liveTrackTextView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Live Track Code"
+        android:gravity="left"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:editable="true"
+        android:inputType="number" />
+
+    <Button
+        android:layout_weight="1"
+        android:layout_below="@+id/liveTrackEditText1"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Livetrack"
+        android:id="@+id/startLiveTrackBTN"
+        android:textColor="@color/textColorSecondary"
+        android:layout_gravity="center" />
+
+</LinearLayout>
