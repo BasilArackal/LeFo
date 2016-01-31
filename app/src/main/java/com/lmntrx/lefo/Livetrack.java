@@ -37,6 +37,7 @@ public class Livetrack extends AppCompatActivity {
         final TextView textView1 = (TextView) findViewById(R.id.textView);
         final TextView textView2 = (TextView) findViewById(R.id.TextView_LiveTrackCode);
         final TextView textView3 = (TextView) findViewById(R.id.liveTrackTextView1);
+        final TextView textView4= (TextView) findViewById(R.id.liveTrackSwitchMsg);
 
 
 
@@ -49,13 +50,14 @@ public class Livetrack extends AppCompatActivity {
                     textView1.setVisibility(View.VISIBLE);
                     textView2.setVisibility(View.VISIBLE);
                     textView3.setText("When enabled, any of your friends can track you via LeFo.Note: Disable after use.");
+                    textView4.setText("Live Track Enabled");
                 } else {
                     // The toggle is disabled
                   //  switch1.toggle();
                     textView1.setVisibility(View.GONE);
                     textView2.setVisibility(View.GONE);
                     textView3.setText("When disabled, no one can track you in live track mode.Note: Does not apply to Journey mode");
-
+                    textView4.setText("Live Track Disabled");
                 }
             }
         });
