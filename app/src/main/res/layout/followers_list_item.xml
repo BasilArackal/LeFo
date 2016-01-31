@@ -10,12 +10,14 @@
             android:layout_height="wrap_content"
             android:text="@string/list_item_default_text"
             android:textSize="@dimen/abc_text_size_title_material_toolbar"
-            android:textColor="@color/material_deep_teal_200"/>
+            android:textColor="@color/textColorPrimary"/>
 
     <ImageView
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:id="@+id/statusImgView"
+        android:src="@drawable/offline"
+        android:layout_gravity="right"
         android:contentDescription="@string/status_icon_description"/>
 
 </LinearLayout>

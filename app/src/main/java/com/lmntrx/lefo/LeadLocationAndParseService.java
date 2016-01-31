@@ -25,7 +25,7 @@ import com.parse.ParseQuery;
 
 import java.util.List;
 
-/**
+/*
  * Created by livin on 13/1/16.
  */
 public class LeadLocationAndParseService extends Service {
@@ -143,7 +143,7 @@ public class LeadLocationAndParseService extends Service {
     private void alertNoPermission() {
         Intent noPermission = new Intent(NO_LOCATION_PERMISSION);
         LeadLocationAndParseService.this.sendBroadcast(noPermission);
-        Log.e(Boss.LOG_TAG, "alertNoPermssion() Called");
+        Log.e(Boss.LOG_TAG, "alertNoPermission() Called");
     }
 
 

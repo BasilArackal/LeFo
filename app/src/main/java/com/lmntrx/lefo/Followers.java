@@ -28,9 +28,6 @@ public class Followers extends AppCompatActivity {
     ListView listView;
     Context context;
 
-
-    SimpleAdapter adapter;
-
     final int REFRESH_FREQUENCY=2000;
 
     Timer t;
