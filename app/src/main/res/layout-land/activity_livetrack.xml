@@ -39,18 +39,12 @@
 
     <LinearLayout
         android:layout_below="@+id/tabbedLinearLayout"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="2">
 
-        <fragment
-            android:id="@+id/fragment3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:name="com.lmntrx.lefo.Queen$fragment3_livetrack_you"
-            tools:layout="@layout/fragment3_livetrack_you" />
+
 
         <fragment
             android:id="@+id/fragment4"
@@ -59,6 +53,14 @@
             android:layout_weight="1"
             android:name="com.lmntrx.lefo.Queen$fragment4_livetrack_others"
             tools:layout="@layout/fragment4_livetrack_others" />
+
+        <fragment
+            android:id="@+id/fragment3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:name="com.lmntrx.lefo.Queen$fragment3_livetrack_you"
+            tools:layout="@layout/fragment3_livetrack_you" />
 
 
     </LinearLayout>

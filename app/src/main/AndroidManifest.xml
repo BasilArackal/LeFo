@@ -45,6 +45,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name=".Lead"
             android:label="@string/title_activity_lead"
             android:theme="@style/AppTheme.NoActionBar" />

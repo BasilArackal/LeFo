@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/BLUE">
+
+    <LinearLayout
+        android:id="@+id/switchLinearLayout"
+        android:orientation="horizontal"
+
+        android:layout_below="@id/tabbedLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="5">
+
+        <TextView
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="Live Track Disabled"
+            android:textColor="@color/textColorSecondary"
+            android:layout_weight="3"/>
+        <Switch
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/liveTrackSwitch"
+            android:layout_weight="2"
+            android:checked="false"
+             />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:weightSum="3"
+        android:id="@+id/linearlayout"
+        android:layout_below="@+id/switchLinearLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:layout_weight="1"
+        android:id="@+id/liveTrackTextView1"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="When disabled, no one can track you in live track mode  Note: Does not apply to Journey mode"
+        android:textColor="@color/textColorSecondary"
+        android:visibility="visible" />
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="YOUR LIVE TRACK CODE"
+            android:id="@+id/textView"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/textColorSecondary"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Loading Code"
+            android:id="@+id/TextView_LiveTrackCode"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/textColorSecondary"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

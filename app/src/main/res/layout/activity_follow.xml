@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lmntrx.lefo.Follow">
+    tools:context="com.lmntrx.lefo.Follow"
+
+    >
+
 
     <LinearLayout
         android:orientation="horizontal"
@@ -14,7 +17,7 @@
         android:weightSum="2"
         android:gravity="center_horizontal"
         android:background="@drawable/adddropshadow"
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayout1"
         >
 
         <Button
@@ -35,39 +38,33 @@
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_journey_follower"
-        android:textColor="@color/textColorSecondary"
-        android:id="@+id/startjourneyBTN"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:onClick="startJourney"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="59dp"
-        android:layout_marginStart="59dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/scanQRbuttonTxt"
-        android:textColor="@color/textColorSecondary"
-        android:id="@+id/scanqrfollowBTN"
-        android:onClick="openQRScanner"
-        android:layout_below="@+id/startjourneyBTN"
-        android:layout_alignLeft="@+id/startjourneyBTN"
-        android:layout_alignStart="@+id/startjourneyBTN"
-        android:layout_marginTop="50dp" />
+<LinearLayout
+    android:layout_below="@+id/linearLayout1"
+    android:id="@+id/linearlayout2"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:hint="@string/hintCodeEntry"
-        android:id="@+id/codeTxt"
-        android:layout_above="@+id/startjourneyBTN"
-        android:layout_centerHorizontal="true" />
+
+
+        <fragment
+            android:layout_weight="1"
+            android:id="@+id/fragment1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.lmntrx.lefo.Queen$fragment1_follow_entercode"
+            tools:layout="@layout/fragment1_follow_entercode" />
+
+        <fragment
+            android:layout_weight="1"
+            android:id="@+id/fragment2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.lmntrx.lefo.Queen$fragment2_follow_scanqr"
+            tools:layout="@layout/fragment2_follow_scanqr" />
+
+</LinearLayout>
 
 </RelativeLayout>
