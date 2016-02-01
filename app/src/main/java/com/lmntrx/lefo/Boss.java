@@ -16,8 +16,10 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,21 +38,23 @@ import java.util.Random;
 
 public class Boss {
 
-    public static boolean DarkTheme=false; // <------ THIS SHOULD BE MADE A SHAREDPREFERANCE //*******Added :)
+    public static boolean DarkTheme = false; // <------ THIS SHOULD BE MADE A SHAREDPREFERANCE //*******Added :)
 
-    public static final String LOG_TAG="LeFoLog ";
+    public static final String LOG_TAG = "LeFoLog ";
 
-    public static int SESSION_APPROVED=2,VERIFIED_STATUS=1;
+    public static int SESSION_APPROVED = 2, VERIFIED_STATUS = 1;
 
-    public static int LEADER_MARKER=1, FOLLOWER_MARKER=2;
+    public static int LEADER_MARKER = 1, FOLLOWER_MARKER = 2;
 
     static Intent locationService, followService;
 
-    //Parse Authentication Keys
-    public final String PARSE_APP_KEY="U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
-    public final String PARSE_CLIENT_KEY="PPNey0aT3L0LAuj9LuEgBgtSpn4eEALQ5WMJzAM6";
+    public static Snackbar snackbar = Snackbar.make(Home.HOME_ACTIVITY.findViewById(R.id.leadBTN),"",Snackbar.LENGTH_SHORT);
 
-    public static boolean isParseInitialised=false;
+    //Parse Authentication Keys
+    public final String PARSE_APP_KEY = "U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
+    public final String PARSE_CLIENT_KEY = "PPNey0aT3L0LAuj9LuEgBgtSpn4eEALQ5WMJzAM6";
+
+    public static boolean isParseInitialised = false;
 
     //Parse Class Name
     public static final String PARSE_CLASS = "LeFo_DB";
@@ -66,16 +70,16 @@ public class Boss {
 
     public static String OBJECT_ID;
 
-    static Notification notification=null;
-    static NotificationManager notificationManager=null;
+    static Notification notification = null;
+    static NotificationManager notificationManager = null;
 
-    public static boolean notified=false;
+    public static boolean notified = false;
 
     public static GoogleMap MAP;
 
 
     //Internet Connectivity Status Check Function
-    public boolean isNetworkAvailable(Context con) {
+    public static boolean isNetworkAvailable(Context con) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -83,18 +87,18 @@ public class Boss {
     }
 
     //Check is GPS is enabled
-    public boolean isGpsEnabled(Context context){
-        final LocationManager manager=(LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+    public boolean isGpsEnabled(Context context) {
+        final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     public void checkGooglePlayServiceStatus(Context context) {
-        int statusCode= GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (statusCode!= ConnectionResult.SUCCESS){
-            if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)){
+        int statusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+        if (statusCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
                 Toast.makeText(context, statusCode + ": Update or install Google play services to continue", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(context,statusCode+": Google play services not available",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, statusCode + ": Google play services not available", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -122,9 +126,9 @@ public class Boss {
     }
 
     public void initializeParse(Context con) {
-        if (!isParseInitialised){
-            Parse.initialize(con,PARSE_APP_KEY,PARSE_CLIENT_KEY);
-            isParseInitialised=true;
+        if (!isParseInitialised) {
+            Parse.initialize(con, PARSE_APP_KEY, PARSE_CLIENT_KEY);
+            isParseInitialised = true;
         }
     }
 
@@ -136,7 +140,7 @@ public class Boss {
     }
 
     public void startSession(Context context, String session_code) {
-        locationService=new Intent(context,LeadLocationAndParseService.class);
+        locationService = new Intent(context, LeadLocationAndParseService.class);
         locationService.putExtra("SESSION_CODE", session_code);
         context.startService(locationService);
     }
@@ -144,8 +148,8 @@ public class Boss {
     public static void deleteSession(Context context) {
         try {
             context.stopService(locationService);
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
         removeNotification();
     }
@@ -153,19 +157,19 @@ public class Boss {
     public static void removeNotification() {
         try {
             notificationManager.cancelAll();
-            Lead.canRefresh=true;
-        }catch (Exception e){
+            Lead.canRefresh = true;
+        } catch (Exception e) {
 
-            Log.e(Boss.LOG_TAG,e.getMessage());
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public static void notifySessionRunning(Context context){
-        Lead.canRefresh=false;
+    public static void notifySessionRunning(Context context) {
+        Lead.canRefresh = false;
         //Intent for direct action from notification
-        Intent deleteIntent=new Intent(context,CloseLeFoSessionReceiver.class);
-        PendingIntent deletePendingIntent=PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent deleteIntent = new Intent(context, CloseLeFoSessionReceiver.class);
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //scaling bitmap
         Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lefo_icon),
@@ -173,12 +177,12 @@ public class Boss {
                 context.getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
                 true);
 
-        Intent contentIntent=new Intent(context,Lead.class);
-        PendingIntent contentPendingIntent=PendingIntent.getBroadcast(context,0,contentIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent contentIntent = new Intent(context, Lead.class);
+        PendingIntent contentPendingIntent = PendingIntent.getBroadcast(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
         builder.setContentTitle("LeFo Session Running");
         builder.setContentText("Session Code:" + Lead.SESSION_CODE);
-       // builder.setSubText("Tap to quit session");
+        // builder.setSubText("Tap to quit session");
         builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "End Session", deletePendingIntent);
         builder.setTicker("LeFo Session Initiated");
         builder.setContentIntent(contentPendingIntent);
@@ -191,7 +195,7 @@ public class Boss {
         notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, notification);
-        notified=true;
+        notified = true;
     }
 
     //EnableGPS Dialog
@@ -236,18 +240,20 @@ public class Boss {
         alert.show();
     }
 
-    public static void askPermission(String name,Activity activity) {
+    public static void askPermission(String name, Activity activity) {
 
-        switch (name){
-            case "LOCATION":{
+        switch (name) {
+            case "LOCATION": {
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0); break;
+                        0);
+                break;
             }
-            case "CAMERA":{
+            case "CAMERA": {
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.CAMERA},
-                        0); break;
+                        0);
+                break;
             }
         }
     }
@@ -255,16 +261,16 @@ public class Boss {
     public static void revertFAB() {
         try {
             Lead.fab.setImageResource(R.drawable.ic_media_play);
-        }catch (NullPointerException e){
-         Log.e(Boss.LOG_TAG,e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
     }
 
     public static int verifySessionCode(final String session_code) {
         final int integer_code;
-        try{
-            integer_code=Integer.parseInt(session_code);
-        }catch (Exception e){
+        try {
+            integer_code = Integer.parseInt(session_code);
+        } catch (Exception e) {
             return 1;
         }
         ParseQuery<ParseObject> queryID = ParseQuery.getQuery(PARSE_CLASS);
@@ -292,7 +298,7 @@ public class Boss {
 
     public static void startFollowSession(String session_code, String object_id, Context context) {
 
-        followService=new Intent(context,FollowLocationAndParseService.class);
+        followService = new Intent(context, FollowLocationAndParseService.class);
         followService.putExtra("SESSION_CODE", session_code);
         followService.putExtra("OBJECT_ID", object_id);
         context.startService(followService);
@@ -300,10 +306,10 @@ public class Boss {
     }
 
     public static void closeFollowSession(Context context) {
-        try{
+        try {
             context.stopService(followService);
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,"Service was not started");
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, "Service was not started");
         }
     }
 
@@ -313,14 +319,14 @@ public class Boss {
         parseObject.put(KEY_CON_CODE, SESSION_CODE);
         parseObject.put(KEY_DEVICE, getDeviceName());
         parseObject.put(KEY_isActive, isActive);
-        parseObject.put(KEY_DEVICE_ID,getDeviceID(context));
+        parseObject.put(KEY_DEVICE_ID, getDeviceID(context));
         parseObject.saveInBackground();
 
     }
 
-    public static String getDeviceID(Context context){
+    public static String getDeviceID(Context context) {
 
-        DeviceUuidFactory deviceUuidFactory=new DeviceUuidFactory(context);
+        DeviceUuidFactory deviceUuidFactory = new DeviceUuidFactory(context);
 
         return deviceUuidFactory.getDeviceUuid().toString();
 
@@ -332,35 +338,35 @@ public class Boss {
                 .setCancelable(false)
                 .setTitle("Session Interrupted")
                 .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                        if (context == Lead.CON){
-                            try {
+                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                dialog.cancel();
+                                if (context == Lead.CON) {
+                                    try {
 
-                                Boss.deleteSession(context);
+                                        Boss.deleteSession(context);
 
-                            }catch (Exception e){
-                                try {
-                                    removeNotification();
-                                }catch (Exception e1){
-                                    System.exit(0);
+                                    } catch (Exception e) {
+                                        try {
+                                            removeNotification();
+                                        } catch (Exception e1) {
+                                            System.exit(0);
+                                        }
+                                    }
+                                    Log.e(Boss.LOG_TAG, "Here Man");
+
+                                } else {
+                                    Boss.closeFollowSession(context);
                                 }
+                                activity.finish();
                             }
-                            Log.e(Boss.LOG_TAG,"Here Man");
-
-                        }else {
-                            Boss.closeFollowSession(context);
                         }
-                            activity.finish();
-                        }
-                    }
 
-                    );
-                    final AlertDialog alert = builder.create();
-                    alert.show();
+                );
+        final AlertDialog alert = builder.create();
+        alert.show();
 
 
-                }
+    }
 
     public static void buildAlertMessageSessionInterrupted(final Context context) {
 
@@ -378,6 +384,24 @@ public class Boss {
                 );
         final AlertDialog alert = builder.create();
         alert.show();
+
+    }
+
+    public static void inform(String msg, View rootView, int choice) {
+        switch (choice) {
+            case 0:
+                snackbar = Snackbar.make(rootView, msg, Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                break;
+            case 1:
+                if (snackbar.isShown())
+                    snackbar.dismiss();
+                break;
+            default:
+                snackbar = Snackbar.make(rootView, msg, Snackbar.LENGTH_LONG);
+                snackbar.show();
+                break;
+        }
 
     }
 }

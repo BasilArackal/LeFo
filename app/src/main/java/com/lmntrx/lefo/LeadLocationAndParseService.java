@@ -32,11 +32,11 @@ public class LeadLocationAndParseService extends Service {
 
 
     //Transaction Tokens
-    public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
-    public static final String CANNOT_LOCATE = "com.lmntrx.CANNOT_LOCATE";
-    public static final String NO_LOCATION_PERMISSION = "com.lmntrx.NO_LOCATION_PERMISSION";
-    public static final String GOT_YA = "com.lmntrx.GOT_YA";
-    public static final String SESSION_INTERRUPTED = "com.lmntrx.SESSION_INTERRUPTED";
+    public static final String LOST_GPS = "com.lmntrx.lefo.LOST_GPS";
+    public static final String CANNOT_LOCATE = "com.lmntrx.lefo.CANNOT_LOCATE";
+    public static final String NO_LOCATION_PERMISSION = "com.lmntrx.lefo.NO_LOCATION_PERMISSION";
+    public static final String GOT_YA = "com.lmntrx.lefo.GOT_YA";
+    public static final String SESSION_INTERRUPTED = "com.lmntrx.lefo.SESSION_INTERRUPTED";
 
     //Parse ObjectID
     public static String objectId = null;
@@ -81,9 +81,9 @@ public class LeadLocationAndParseService extends Service {
 
         try {
             SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Boss.removeNotification();
-            Log.e(Boss.LOG_TAG,e.getMessage());
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
 
 
@@ -97,24 +97,25 @@ public class LeadLocationAndParseService extends Service {
             Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
             exit();
         } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);current_location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (current_location != null){
-                try{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
+            current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (current_location != null) {
+                try {
                     syncDB(current_location);
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     Log.e(Boss.LOG_TAG, e.getMessage());
                     exit();
                 }
-            }else {
-                current_location=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (current_location != null){
-                    try{
+            } else {
+                current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (current_location != null) {
+                    try {
                         syncDB(current_location);
-                    }catch (IllegalArgumentException e){
-                        Log.e(Boss.LOG_TAG,e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        Log.e(Boss.LOG_TAG, e.getMessage());
                         exit();
                     }
-                }else {
+                } else {
                     alertCannotLocate();
                 }
             }
@@ -126,18 +127,50 @@ public class LeadLocationAndParseService extends Service {
 
     public void exit() {
         Log.d(Boss.LOG_TAG, "exit() called");
+        unRegisterAllFollowers();
         stop = false;
         isSynced = false;
         objectId = null;
         Boss.removeNotification();
         Lead.isSessionOn = false;
         Boss.revertFAB();
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.removeUpdates(locationListener);
-            } else locationManager.removeUpdates(locationListener);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.removeUpdates(locationListener);
+        } else locationManager.removeUpdates(locationListener);
         deleteSession();
         exitCalled = true;
         LeadLocationAndParseService.this.stopSelf();
+    }
+
+    private void unRegisterAllFollowers() {
+
+
+        ParseQuery query = new ParseQuery(Boss.PARSE_FCLASS);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> results, com.parse.ParseException e) {
+                if (results != null) {
+                    if (e == null) {
+                        for (ParseObject result : results) {
+                            if (result.getString(Boss.KEY_CON_CODE).equals(Lead.SESSION_CODE)) {
+                                try {
+                                    result.delete();
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                                result.saveInBackground();
+                            }
+
+                        }
+                    } else {
+                        e.printStackTrace();
+                        System.out.print(e.getMessage());
+                    }
+                }
+            }
+        });
+
+
     }
 
     private void alertNoPermission() {
@@ -269,8 +302,8 @@ public class LeadLocationAndParseService extends Service {
                 Log.d(Boss.LOG_TAG + "SYNC", "Synced");
                 isSynced = true;
                 alertGotYou();
-            }catch (NullPointerException e){
-                Log.e(Boss.LOG_TAG,e.getMessage());
+            } catch (NullPointerException e) {
+                Log.e(Boss.LOG_TAG, e.getMessage());
                 Boss.removeNotification();
                 alertSessionInterupted();
                 exit();
@@ -315,8 +348,8 @@ public class LeadLocationAndParseService extends Service {
                     }
                 }
             });
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
     }
 

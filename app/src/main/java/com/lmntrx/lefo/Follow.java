@@ -1,7 +1,11 @@
 package com.lmntrx.lefo;
 
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +20,7 @@ public class Follow extends AppCompatActivity {
 
     public String SESSION_CODE = null;
     EditText codeTXT;
+    Activity thisActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +28,19 @@ public class Follow extends AppCompatActivity {
         Utils.RetainTheme(this);
         setContentView(R.layout.activity_follow);
         codeTXT = (EditText) findViewById(R.id.codeTxt);
+
+        startService(new Intent(this, ConnectivityReporter.class));
+
+        thisActivity=this;
+
+
+        IntentFilter lostConnection = new IntentFilter();
+        lostConnection.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_NEGATIVE);
+        registerReceiver(lostConnectionBR, lostConnection);
+
+        IntentFilter connectionResumed = new IntentFilter();
+        connectionResumed.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_POSITIVE);
+        registerReceiver(connectionResumedBR, connectionResumed);
 
 
 
@@ -82,5 +100,30 @@ public class Follow extends AppCompatActivity {
         View view = findViewById(R.id.codeTxt).getRootView();
         Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    private BroadcastReceiver lostConnectionBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Lost Connection", thisActivity.findViewById(R.id.codeTxt), 0);
+        }
+    };
+
+    private BroadcastReceiver connectionResumedBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Connected", thisActivity.findViewById(R.id.codeTxt), 1);
+        }
+    };
+
+
+    @Override
+    protected void onDestroy() {
+
+        unregisterReceiver(lostConnectionBR);
+        unregisterReceiver(connectionResumedBR);
+
+
+        super.onDestroy();
     }
 }

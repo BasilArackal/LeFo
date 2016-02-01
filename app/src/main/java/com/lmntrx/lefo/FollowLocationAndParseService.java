@@ -42,15 +42,15 @@ public class FollowLocationAndParseService extends Service {
     public final long MIN_TIME = 8000; //5000ms=5s
     public final float MIN_DISTANCE = 10;//10m
 
+    Boolean informedLostConnection = false;
 
 
-    Boolean alerted=false;
+    Boolean alerted = false;
 
     //Broadcast Tokens
     public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
     public static final String CANNOT_LOCATE = "com.lmntrx.CANNOT_LOCATE";
     public static final String NO_LOCATION_PERMISSION = "com.lmntrx.NO_LOCATION_PERMISSION";
-
 
 
     public static boolean cancelled = false;
@@ -68,7 +68,7 @@ public class FollowLocationAndParseService extends Service {
     public String OBJECT_ID;
     public static String FOBJECT_ID;
 
-    int LEADER_LOCATION_UPDATE_INTERVEL=5000;
+    int LEADER_LOCATION_UPDATE_INTERVEL = 5000;
 
     Timer t;
 
@@ -82,24 +82,23 @@ public class FollowLocationAndParseService extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
 
-        try{
-            SESSION_CODE=Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
-            OBJECT_ID=intent.getStringExtra("OBJECT_ID");
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,e.getMessage());
+        try {
+            SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
+            OBJECT_ID = intent.getStringExtra("OBJECT_ID");
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
             exit();
         }
 
 
+        cancelled = false;
 
-        cancelled=false;
-
-        try{
+        try {
             getLeaderLocation();
             getFollowerLocation();
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,e.getMessage());
-            Boss.alertLostConnection(MapsActivity.context,MapsActivity.activity);
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
+            Boss.alertLostConnection(MapsActivity.context, MapsActivity.activity);
         }
 
 
@@ -125,26 +124,30 @@ public class FollowLocationAndParseService extends Service {
                                             showLeaderLoc(object.getParseGeoPoint(Boss.KEY_LOCATION));
                                         }
                                     } else {
-                                        if (!alerted){
-                                            MapsActivity.alertSessionEnd();
-                                            alerted=true;
-                                            e.printStackTrace();
-                                            exit();
+                                        if (!alerted) {
+                                            if (Boss.isNetworkAvailable(getApplicationContext())) {
+                                                if (!informedLostConnection) {
+                                                    Boss.inform("Lost Internet Connection", MapsActivity.activity.findViewById(R.id.map).getRootView(),2);
+                                                    informedLostConnection = true;
+                                                }
+                                            } else {
+                                                MapsActivity.alertSessionEnd();
+                                                alerted = true;
+                                                e.printStackTrace();
+                                                exit();
+                                            }
                                         }
                                     }
                                 }
                             });
                         }
                         //getFollowerLoc(map);
-                        Log.d(Boss.LOG_TAG+"TIMER", "Timer Running");
+                        Log.d(Boss.LOG_TAG + "TIMER", "Timer Running");
                     }
                 });
             }
         };
         t.schedule(feedLocation, LEADER_LOCATION_UPDATE_INTERVEL, LEADER_LOCATION_UPDATE_INTERVEL); //updates every 5s
-
-
-
 
 
     }
@@ -153,10 +156,10 @@ public class FollowLocationAndParseService extends Service {
 
         try {
             t.cancel();
-        }catch (NullPointerException e){
-            Log.e(Boss.LOG_TAG,e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage());
         }
-        cancelled=true;
+        cancelled = true;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.removeUpdates(locationListener);
         } else locationManager.removeUpdates(locationListener);
@@ -181,14 +184,14 @@ public class FollowLocationAndParseService extends Service {
             exit();
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
-            current_location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (current_location != null){
+            current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (current_location != null) {
                 showFollowerLoc(current_location);
-            }else {
-                current_location=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (current_location != null){
+            } else {
+                current_location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (current_location != null) {
                     showFollowerLoc(current_location);
-                }else {
+                } else {
                     alertCannotLocate();
                 }
             }
@@ -278,7 +281,7 @@ public class FollowLocationAndParseService extends Service {
 
     @Override
     public void onDestroy() {
-        if (!cancelled){
+        if (!cancelled) {
             t.cancel();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.removeUpdates(locationListener);
@@ -288,8 +291,8 @@ public class FollowLocationAndParseService extends Service {
     }
 
 
-    public static void updateFollowerStatus(final Boolean status,String session_code) {
-        Log.d(Boss.LOG_TAG,"Updating Follower Status "+status);
+    public static void updateFollowerStatus(final Boolean status, String session_code) {
+        Log.d(Boss.LOG_TAG, "Updating Follower Status " + status);
         ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_FCLASS);
         queryID.whereEqualTo(Boss.KEY_CON_CODE, session_code);
         queryID.findInBackground(new FindCallback<ParseObject>() {
@@ -310,44 +313,21 @@ public class FollowLocationAndParseService extends Service {
                                     parseUpdateObject.put(Boss.KEY_isActive, status);
                                     parseUpdateObject.saveInBackground();
                                 } else {
-                                    Log.e(Boss.LOG_TAG+"FLPS",e.getMessage());
+                                    Log.e(Boss.LOG_TAG + "FLPS", e.getMessage());
                                 }
                             }
                         });
-                    }else {
-                        Log.e(Boss.LOG_TAG+"FLPS","Null ObjectID");
+                    } else {
+                        Log.e(Boss.LOG_TAG + "FLPS", "Null ObjectID");
                     }
 
 
                 } else {
-                    Log.e(Boss.LOG_TAG+"FLPS",e.getMessage());
+                    Log.e(Boss.LOG_TAG + "FLPS", e.getMessage());
                 }
             }
         });
 
-    }
-
-    public static void unRegisterFollower() {
-        ParseQuery query=new ParseQuery(Boss.PARSE_FCLASS);
-        query.whereEqualTo(Boss.KEY_CON_CODE, SESSION_CODE);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> results, com.parse.ParseException e) {
-                if (e == null) {
-                    for (ParseObject result : results) {
-                        try {
-                            result.delete();
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-                        result.saveInBackground();
-                    }
-                } else {
-                    e.printStackTrace();
-                    System.out.print(e.getMessage());
-                }
-            }
-        });
     }
 
 

@@ -1,5 +1,6 @@
 package com.lmntrx.lefo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,7 +23,9 @@ import com.parse.ParseAnalytics;
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    Boss boss = new Boss();
+    Boss boss;
+
+    public static Activity HOME_ACTIVITY;
 
 
     @Override
@@ -32,6 +35,10 @@ public class Home extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        HOME_ACTIVITY=this;
+
+        boss = new Boss();
 
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

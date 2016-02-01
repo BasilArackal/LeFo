@@ -70,6 +70,8 @@ public class Lead extends AppCompatActivity {
 
         Boss.notified=false;
 
+        startService(new Intent(this,ConnectivityReporter.class));
+
 
         SESSION_CODE = Boss.genLeFoCode() + "";
 
@@ -133,6 +135,14 @@ public class Lead extends AppCompatActivity {
         IntentFilter sessionInterrupted = new IntentFilter();
         sessionInterrupted.addAction(LeadLocationAndParseService.SESSION_INTERRUPTED);
         registerReceiver(sessionInterruptedBR, sessionInterrupted);
+
+        IntentFilter lostConnection = new IntentFilter();
+        lostConnection.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_NEGATIVE);
+        registerReceiver(lostConnectionBR, lostConnection);
+
+        IntentFilter connectionResumed = new IntentFilter();
+        connectionResumed.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_POSITIVE);
+        registerReceiver(connectionResumedBR, connectionResumed);
 
     }
 
@@ -203,6 +213,7 @@ public class Lead extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        ConnectivityReporter.SURRENDER=true;
         if (isSessionOn)
         Boss.deleteSession(this);
         isSessionOn = false;
@@ -215,6 +226,8 @@ public class Lead extends AppCompatActivity {
         unregisterReceiver(noLocationPermissionBR);
         unregisterReceiver(gotYaBR);
         unregisterReceiver(sessionInterruptedBR);
+        unregisterReceiver(lostConnectionBR);
+        unregisterReceiver(connectionResumedBR);
         super.onDestroy();
     }
 
@@ -273,7 +286,7 @@ public class Lead extends AppCompatActivity {
             Log.d(Boss.LOG_TAG, "Recieved BR");
             Snackbar.make(view, "Sorry, Session Failed. Please grant permission to access location and try again.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Action", null).show();
-            Boss.askPermission("LOCATION",currentLeadActivity);
+            Boss.askPermission("LOCATION", currentLeadActivity);
         }
     };
 
@@ -284,6 +297,20 @@ public class Lead extends AppCompatActivity {
             Log.d(Boss.LOG_TAG, "Recieved BR");
             Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+        }
+    };
+
+    private BroadcastReceiver lostConnectionBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Lost Connection", currentLeadActivity.findViewById(R.id.qrIMG), 0);
+        }
+    };
+
+    private BroadcastReceiver connectionResumedBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Connected", currentLeadActivity.findViewById(R.id.qrIMG), 1);
         }
     };
 

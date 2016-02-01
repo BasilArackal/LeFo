@@ -96,6 +96,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         noLocationPermission.addAction(FollowLocationAndParseService.NO_LOCATION_PERMISSION);
         registerReceiver(noLocationPermissionBR, noLocationPermission);
 
+        IntentFilter lostConnection = new IntentFilter();
+        lostConnection.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_NEGATIVE);
+        registerReceiver(lostConnectionBR, lostConnection);
+
+        IntentFilter connectionResumed = new IntentFilter();
+        connectionResumed.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_POSITIVE);
+        registerReceiver(connectionResumedBR, connectionResumed);
+
         try {
             Boss.registerFollower(SESSION_CODE, isActive, context);
         } catch (NullPointerException e) {
@@ -228,6 +236,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onDestroy() {
 
+        ConnectivityReporter.SURRENDER = true;
+
         isActive = false;
         if (!updated) {
             FollowLocationAndParseService.updateFollowerStatus(false, SESSION_CODE);
@@ -239,6 +249,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         unregisterReceiver(cannotLocateBR);
         unregisterReceiver(gpsDisabledBR);
         unregisterReceiver(noLocationPermissionBR);
+        unregisterReceiver(lostConnectionBR);
+        unregisterReceiver(connectionResumedBR);
         super.onDestroy();
     }
 
@@ -310,5 +322,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onBackPressed() {
         alertDisconnectSession();
     }
+
+
+    private BroadcastReceiver lostConnectionBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Lost Connection", activity.findViewById(R.id.map), 0);
+        }
+    };
+
+    private BroadcastReceiver connectionResumedBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Connected", activity.findViewById(R.id.map), 1);
+        }
+    };
 
 }

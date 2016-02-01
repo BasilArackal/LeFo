@@ -58,6 +58,10 @@
             android:name=".FollowLocationAndParseService"
             android:exported="false" />
 
+        <service
+            android:name=".ConnectivityReporter"
+            android:exported="false" />
+
         <receiver android:name=".CloseLeFoSessionReceiver" />
 
         <activity android:name=".Scanner" />
