@@ -23,19 +23,25 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Boss boss = new Boss();
+    boolean ManuallyChanged=false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.onActivityCreateSetTheme(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
+        int NoActionBar=1;
+        if(!ManuallyChanged)
+            Utils.RetainTheme(this,NoActionBar);
+        else
+            Utils.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
+
 
 
         boss.initializeParse(this);
@@ -119,6 +125,7 @@ public class Home extends AppCompatActivity
 
         //   /*
         else if (id == R.id.changethemetemporary) {
+            ManuallyChanged=true;
             if (!Boss.DarkTheme) {
                 Boss.DarkTheme = true;
                 Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK_NOACTIONBAR);  //  means dark theme
