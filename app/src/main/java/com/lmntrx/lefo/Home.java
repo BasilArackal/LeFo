@@ -22,7 +22,7 @@ import com.parse.ParseAnalytics;
 // extending from just Activity removes Actionbar automatically. extending from AppCompatActivity includes Actionbar
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    
+
     Boss boss;
 
     public static Activity HOME_ACTIVITY;
@@ -32,18 +32,22 @@ public class Home extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        HOME_ACTIVITY=this;
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
+
         int NoActionBar=1;
         if(!ManuallyChanged)
             Utils.RetainTheme(this,NoActionBar);
         else
             Utils.onActivityCreateSetTheme(this);
+
         setContentView(R.layout.activity_home);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        HOME_ACTIVITY=this;
 
         boss = new Boss();
 
@@ -160,7 +164,7 @@ public class Home extends AppCompatActivity
     }
 
     public void startLead(View v) {
-        if (boss.isNetworkAvailable(this)) {
+        if (Boss.isNetworkAvailable(this)) {
             if (boss.isGpsEnabled(this)) {
                 Intent intent = new Intent(this, Lead.class);
                 startActivity(intent);
@@ -172,7 +176,7 @@ public class Home extends AppCompatActivity
     }
 
     public void startFollow(View v) {
-        if (boss.isNetworkAvailable(this)) {
+        if (Boss.isNetworkAvailable(this)) {
             if (boss.isGpsEnabled(this)) {
                 Intent intent = new Intent(this, Follow.class);
                 startActivity(intent);

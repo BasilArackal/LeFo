@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.GoogleMap;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -38,7 +37,7 @@ import java.util.Random;
 
 public class Boss {
 
-    public static boolean DarkTheme = false; // <------ THIS SHOULD BE MADE A SHAREDPREFERANCE //*******Added :)
+    public static boolean DarkTheme = false;
 
     public static final String LOG_TAG = "LeFoLog ";
 
@@ -48,7 +47,11 @@ public class Boss {
 
     static Intent locationService, followService;
 
-    public static Snackbar snackbar = Snackbar.make(Home.HOME_ACTIVITY.findViewById(R.id.leadBTN),"",Snackbar.LENGTH_SHORT);
+    //try{
+        public static Snackbar snackbar;
+    /*}catch(Exception e){
+
+    }*/
 
     //Parse Authentication Keys
     public final String PARSE_APP_KEY = "U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
@@ -75,7 +78,9 @@ public class Boss {
 
     public static boolean notified = false;
 
-    public static GoogleMap MAP;
+    public Boss(){
+        snackbar = Snackbar.make(Home.HOME_ACTIVITY.findViewById(R.id.leadBTN),"",Snackbar.LENGTH_SHORT);
+    }
 
 
     //Internet Connectivity Status Check Function
@@ -182,7 +187,6 @@ public class Boss {
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
         builder.setContentTitle("LeFo Session Running");
         builder.setContentText("Session Code:" + Lead.SESSION_CODE);
-        // builder.setSubText("Tap to quit session");
         builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, "End Session", deletePendingIntent);
         builder.setTicker("LeFo Session Initiated");
         builder.setContentIntent(contentPendingIntent);
@@ -394,8 +398,12 @@ public class Boss {
                 snackbar.show();
                 break;
             case 1:
-                if (snackbar.isShown())
-                    snackbar.dismiss();
+                try {
+                    if (snackbar.isShown())
+                        snackbar.dismiss();
+                }catch (Exception e){
+                    Log.e(Boss.LOG_TAG,e.getMessage());
+                }
                 break;
             default:
                 snackbar = Snackbar.make(rootView, msg, Snackbar.LENGTH_LONG);
