@@ -39,6 +39,8 @@ public class FollowLocationAndParseService extends Service {
     public final long MIN_TIME = 8000; //5000ms=5s
     public final float MIN_DISTANCE = 10;//10m
 
+    static String device_id;
+
 
     Boolean alerted = false;
 
@@ -74,6 +76,8 @@ public class FollowLocationAndParseService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Service Started");
+
+        device_id=Boss.getDeviceID(MapsActivity.context);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
@@ -280,10 +284,10 @@ public class FollowLocationAndParseService extends Service {
     }
 
 
-    public static void updateFollowerStatus(final Boolean status, String session_code) {
+    public static void updateFollowerStatus(final Boolean status) {
         Log.d(Boss.LOG_TAG, "Updating Follower Status " + status);
         ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_FCLASS);
-        queryID.whereEqualTo(Boss.KEY_CON_CODE, session_code);
+        queryID.whereEqualTo(Boss.KEY_DEVICE_ID, device_id );
         queryID.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {

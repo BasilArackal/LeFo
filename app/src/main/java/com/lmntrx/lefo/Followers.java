@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -89,6 +90,18 @@ public class Followers extends AppCompatActivity {
 
         registerForContextMenu(listView);
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String selectedDevice = FOLLOWERS_DETAILS.get(position).get(Boss.KEY_DEVICE);
+
+                Boss.inform("You selected "+selectedDevice,listView,Boss.SNACKBAR_DEFINITE);
+                
+
+                return true;
+            }
+        });
 
     }
 

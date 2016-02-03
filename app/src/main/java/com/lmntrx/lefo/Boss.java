@@ -37,6 +37,9 @@ import java.util.Random;
 
 public class Boss {
 
+    public static final int SNACKBAR_DEFINITE = 2;
+    public static final int SNACKBAR_INDEFINITE_LAUNCH = 0;
+    public static final int SNACKBAR_INDEFINITE_CLOSE = 1;
     public static boolean DarkTheme = false;
 
     public static final String LOG_TAG = "LeFoLog ";
@@ -391,13 +394,13 @@ public class Boss {
 
     }
 
-    public static void inform(String msg, View rootView, int choice) {
-        switch (choice) {
-            case 0:
+    public static void inform(String msg, View rootView, int duratinChoice) {
+        switch (duratinChoice) {
+            case SNACKBAR_INDEFINITE_LAUNCH:
                 snackbar = Snackbar.make(rootView, msg, Snackbar.LENGTH_INDEFINITE);
                 snackbar.show();
                 break;
-            case 1:
+            case SNACKBAR_INDEFINITE_CLOSE:
                 try {
                     if (snackbar.isShown())
                         snackbar.dismiss();
