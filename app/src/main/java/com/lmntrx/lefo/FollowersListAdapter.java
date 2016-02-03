@@ -14,7 +14,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
+/*
  * Created by livin on 31/1/16.
  */
 public class FollowersListAdapter extends ArrayAdapter<String> {
@@ -32,29 +32,18 @@ public class FollowersListAdapter extends ArrayAdapter<String> {
 
         View view = inflater.inflate(R.layout.followers_list_item, parent, false);
 
-        String followerDetails = getItem(position);
-        String follower, status;
-        try {
-            follower = followerDetails.substring(0, followerDetails.indexOf(':'));
-            status = followerDetails.substring(followerDetails.indexOf(':') + 1);
-        } catch (NullPointerException e) {
-            Log.e(Boss.LOG_TAG, e.getMessage());
-            view.setVisibility(View.INVISIBLE);
-            return view;
-        }
+        String follower = getItem(position);
+        Boolean status = Followers.devicesActiveStatus[position];
+
         TextView textView = (TextView) view.findViewById(R.id.list_item_field);
         textView.setText(follower);
         ImageView imageView = (ImageView) view.findViewById(R.id.statusImgView);
-        switch (status) {
-            case "true":
-                imageView.setImageResource(R.drawable.online);
-                break;
-            case "false":
-                imageView.setImageResource(R.drawable.offline);
-                break;
-            default:
-                imageView.setImageResource(R.drawable.mr_ic_pause_light);
-                break;
+        if (status) {
+            imageView.setImageResource(R.drawable.online);
+
+        } else {
+            imageView.setImageResource(R.drawable.offline);
+
         }
 
 

@@ -9,7 +9,11 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseObject;
@@ -27,11 +31,15 @@ public class Followers extends AppCompatActivity {
     ListView listView;
     Context context;
 
+    FollowersListAdapter listAdapter;
+
     Activity thisActivity;
 
     final int REFRESH_FREQUENCY = 2000;
 
     Timer t;
+
+    public static Boolean devicesActiveStatus[] = new Boolean[15];
 
     public static ArrayList<HashMap<String, String>> FOLLOWERS_DETAILS = new ArrayList<HashMap<String, String>>();
 
@@ -79,8 +87,34 @@ public class Followers extends AppCompatActivity {
         };
         t.scheduleAtFixedRate(task, REFRESH_FREQUENCY, REFRESH_FREQUENCY);
 
+        registerForContextMenu(listView);
+
 
     }
+
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Choose an action");
+        menu.add(0, v.getId(), 0, "Kick");//groupId, itemId, order, title
+        menu.add(0, v.getId(), 0, "View Details");
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        if(item.getTitle()=="Kick"){
+            Toast.makeText(getApplicationContext(),"Code to kick user",Toast.LENGTH_LONG).show();
+        }
+        else if(item.getTitle()=="View Details"){
+            Toast.makeText(getApplicationContext(),"Viewing user", Toast.LENGTH_LONG).show();
+        }else{
+            return false;
+        }
+        return true;
+    }
+
 
     public void loadFollowers() {
 
@@ -94,31 +128,30 @@ public class Followers extends AppCompatActivity {
                             Log.e(Boss.LOG_TAG, "Empty");
                         }
                         if (e == null) {
-                            ArrayList<HashMap<String, String>> infos = new ArrayList<HashMap<String, String>>();
+                            ArrayList<HashMap<String, String>> details = new ArrayList<HashMap<String, String>>();
                             for (ParseObject result : results) {
                                 HashMap<String, String> info = new HashMap<String, String>();
                                 if ((SESSION_CODE + "").equals(result.getString(Boss.KEY_CON_CODE))) {
                                     info.put(Boss.KEY_DEVICE_ID, result.getString(Boss.KEY_DEVICE_ID));
                                     info.put(Boss.KEY_DEVICE, result.getString(Boss.KEY_DEVICE));
                                     info.put(Boss.KEY_isActive, result.getBoolean(Boss.KEY_isActive) + "");
-                                    info.put(Boss.KEY_DEVICE + ":" + Boss.KEY_isActive, result.getString(Boss.KEY_DEVICE) + ":" + result.getBoolean(Boss.KEY_isActive));
-                                    infos.add(info);
+                                    details.add(info);
                                 }
                             }
-                            if (infos.isEmpty()) {
+                            if (details.isEmpty()) {
                                 HashMap<String, String> info = new HashMap<String, String>();
-                                info.put(Boss.KEY_DEVICE, "No Followers:false");
-                                infos.add(info);
+                                info.put(Boss.KEY_DEVICE, "No Followers");
+                                details.add(info);
                             }
-                            String devices[] = new String[infos.size()];
-                            for (int i = 0; i < infos.size(); i++) {
-                                devices[i] = infos.get(i).get(Boss.KEY_DEVICE + ":" + Boss.KEY_isActive);
+                            String devices[] = new String[details.size()];
+                            for (int i = 0; i < details.size(); i++) {
+                                devices[i] = details.get(i).get(Boss.KEY_DEVICE);
+                                devicesActiveStatus[i] = Boolean.valueOf(details.get(i).get(Boss.KEY_isActive));
                             }
-                            FollowersListAdapter listAdapter = new FollowersListAdapter(context, devices);
-                            //SimpleAdapter adapter = new SimpleAdapter(context, infos, R.layout.followers_list_item, new String[]{Boss.KEY_DEVICE}, new int[]{R.id.list_item_field});
+                            listAdapter = new FollowersListAdapter(context, devices);
                             listView.setAdapter(listAdapter);
                             FOLLOWERS_DETAILS.clear();
-                            FOLLOWERS_DETAILS = infos;
+                            FOLLOWERS_DETAILS = details;
                         } else {
                             e.printStackTrace();
                             System.out.print(e.getMessage());

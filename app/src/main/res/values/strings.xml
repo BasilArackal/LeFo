@@ -86,6 +86,7 @@
     <string name="qrcode_scan_hint">Frame the QR code in the viewfinder screen</string>
     <string name="list_item_default_text">No Followers</string>
     <string name="status_icon_description">Follower Status Icon</string>
+    <string name="followers_list_cab_delete_action">Kick</string>
 
 
 </resources>

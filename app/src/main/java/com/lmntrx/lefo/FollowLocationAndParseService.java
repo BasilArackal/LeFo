@@ -2,10 +2,8 @@ package com.lmntrx.lefo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -31,7 +28,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
+/*
  * Created by livin on 15/1/16.
  */
 public class FollowLocationAndParseService extends Service {
@@ -42,10 +39,9 @@ public class FollowLocationAndParseService extends Service {
     public final long MIN_TIME = 8000; //5000ms=5s
     public final float MIN_DISTANCE = 10;//10m
 
-    Boolean informedLostConnection = false;
-
 
     Boolean alerted = false;
+
 
     //Broadcast Tokens
     public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
@@ -68,7 +64,7 @@ public class FollowLocationAndParseService extends Service {
     public String OBJECT_ID;
     public static String FOBJECT_ID;
 
-    int LEADER_LOCATION_UPDATE_INTERVEL = 5000;
+    int LEADER_LOCATION_UPDATE_INTERVAL = 5000;
 
     Timer t;
 
@@ -125,17 +121,10 @@ public class FollowLocationAndParseService extends Service {
                                         }
                                     } else {
                                         if (!alerted) {
-                                            if (Boss.isNetworkAvailable(getApplicationContext())) {
-                                                if (!informedLostConnection) {
-                                                    Boss.inform("Lost Internet Connection", MapsActivity.activity.findViewById(R.id.map).getRootView(),2);
-                                                    informedLostConnection = true;
-                                                }
-                                            } else {
                                                 MapsActivity.alertSessionEnd();
                                                 alerted = true;
                                                 e.printStackTrace();
                                                 exit();
-                                            }
                                         }
                                     }
                                 }
@@ -147,7 +136,7 @@ public class FollowLocationAndParseService extends Service {
                 });
             }
         };
-        t.schedule(feedLocation, LEADER_LOCATION_UPDATE_INTERVEL, LEADER_LOCATION_UPDATE_INTERVEL); //updates every 5s
+        t.schedule(feedLocation, LEADER_LOCATION_UPDATE_INTERVAL, LEADER_LOCATION_UPDATE_INTERVAL); //updates every 5s
 
 
     }
