@@ -1,8 +1,7 @@
 #Miscellaneous
 *.iml
 *.jks
-/.idea/workspace.xml
-/.idea/libraries
+.idea/
 
 #Mac OSX
 .DS_Store
