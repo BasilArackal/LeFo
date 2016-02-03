@@ -12,8 +12,8 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -35,6 +35,11 @@ public class Followers extends AppCompatActivity {
     FollowersListAdapter listAdapter;
 
     Activity thisActivity;
+
+    String selectedDeviceID = "", selectedDeviceName = "";
+
+
+    HashMap<String, String> selectedListItemObject = new HashMap<String, String>();
 
     final int REFRESH_FREQUENCY = 2000;
 
@@ -72,6 +77,10 @@ public class Followers extends AppCompatActivity {
         connectionResumed.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_POSITIVE);
         registerReceiver(connectionResumedBR, connectionResumed);
 
+        IntentFilter kickedFollower = new IntentFilter();
+        kickedFollower.addAction(Boss.KICKED_FOLLOWER);
+        registerReceiver(kickedFollowerBR, kickedFollower);
+
 
         t = new Timer();
         final Handler handler = new Handler();
@@ -90,48 +99,68 @@ public class Followers extends AppCompatActivity {
 
         registerForContextMenu(listView);
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 String selectedDevice = FOLLOWERS_DETAILS.get(position).get(Boss.KEY_DEVICE);
 
                 Boss.inform("You selected "+selectedDevice,listView,Boss.SNACKBAR_DEFINITE);
-                
+
 
                 return true;
             }
-        });
+        });*/
 
     }
 
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        selectedDeviceName = ((TextView) (v.findViewById(R.id.list_item_field))).getText().toString();
+        if (!selectedDeviceName.equals("No Followers")) {
+            for (HashMap<String, String> object : FOLLOWERS_DETAILS) {
+                if (object.get(Boss.KEY_DEVICE).equals(selectedDeviceName)) {
+                    selectedListItemObject = object;
+                    selectedDeviceID = object.get(Boss.KEY_DEVICE_ID);
+                    break;
+                }
+            }
+
+
+
+            menu.setHeaderTitle(selectedDeviceName);
+            menu.add(0, v.getId(), 0, "Kick");//groupId, itemId, order, title
+            menu.add(0, v.getId(), 0, "View Details");
+            super.onCreateContextMenu(menu, v, menuInfo);
+        } else menu.close();
+    }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
-    {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("Choose an action");
-        menu.add(0, v.getId(), 0, "Kick");//groupId, itemId, order, title
-        menu.add(0, v.getId(), 0, "View Details");
-    }
-    @Override
-    public boolean onContextItemSelected(MenuItem item){
-        if(item.getTitle()=="Kick"){
-            Toast.makeText(getApplicationContext(),"Code to kick user",Toast.LENGTH_LONG).show();
-        }
-        else if(item.getTitle()=="View Details"){
-            Toast.makeText(getApplicationContext(),"Viewing user", Toast.LENGTH_LONG).show();
-        }else{
+    public boolean onContextItemSelected(MenuItem item) {
+
+
+        if (item.getTitle() == "Kick") {
+            Boss.kickUser(selectedDeviceID, selectedDeviceName, Lead.SESSION_CODE, thisActivity);
+        } else if (item.getTitle() == "View Details") {
+            Toast.makeText(getApplicationContext(), "Viewing user", Toast.LENGTH_LONG).show();
+            showFollowerDetails(selectedDeviceID);
+        } else {
             return false;
         }
         return true;
     }
 
+    private void showFollowerDetails(String selectedDeviceID) {
+
+        // Code to show follower details ......................
+
+    }
+
 
     public void loadFollowers() {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FCLASS);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FOLLOWERS_CLASS);
         try {
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
@@ -198,6 +227,7 @@ public class Followers extends AppCompatActivity {
 
         unregisterReceiver(lostConnectionBR);
         unregisterReceiver(connectionResumedBR);
+        unregisterReceiver(kickedFollowerBR);
 
         t.cancel();
         super.onDestroy();
@@ -206,14 +236,21 @@ public class Followers extends AppCompatActivity {
     private BroadcastReceiver lostConnectionBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Boss.inform("Lost Connection", thisActivity.findViewById(R.id.followersList), 0);
+            Boss.inform("Lost Connection", thisActivity.findViewById(R.id.followersList), Boss.SNACKBAR_INDEFINITE_LAUNCH);
         }
     };
 
     private BroadcastReceiver connectionResumedBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Boss.inform("Connected", thisActivity.findViewById(R.id.followersList), 1);
+            Boss.inform("Connected", thisActivity.findViewById(R.id.followersList), Boss.SNACKBAR_INDEFINITE_CLOSE);
+        }
+    };
+
+    private BroadcastReceiver kickedFollowerBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boss.inform("Kicked " + selectedDeviceName, thisActivity.findViewById(R.id.followersList), 2);
         }
     };
 

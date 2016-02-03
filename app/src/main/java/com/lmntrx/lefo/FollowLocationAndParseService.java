@@ -49,6 +49,7 @@ public class FollowLocationAndParseService extends Service {
     public static final String LOST_GPS = "com.lmntrx.LOST_GPS";
     public static final String CANNOT_LOCATE = "com.lmntrx.CANNOT_LOCATE";
     public static final String NO_LOCATION_PERMISSION = "com.lmntrx.NO_LOCATION_PERMISSION";
+    public static final String KICKED_TOKEN = "com.lmntrx.lefo.KICKED";
 
 
     public static boolean cancelled = false;
@@ -63,12 +64,14 @@ public class FollowLocationAndParseService extends Service {
     public static int SESSION_CODE = 1;
 
     //Object_id
-    public String OBJECT_ID;
-    public static String FOBJECT_ID;
+    public String LEADER_OBJECT_ID;
+    public static String FOLLOWER_OBJECT_ID;
 
     int LEADER_LOCATION_UPDATE_INTERVAL = 5000;
 
-    Timer t;
+    Timer leaderLocationUpdateTimer;
+
+    static Boolean kickAcknowledgement = false;
 
 
     @SuppressLint("LongLogTag")
@@ -79,12 +82,14 @@ public class FollowLocationAndParseService extends Service {
 
         device_id=Boss.getDeviceID(MapsActivity.context);
 
+        kickAcknowledgement=false;
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
 
         try {
             SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
-            OBJECT_ID = intent.getStringExtra("OBJECT_ID");
+            LEADER_OBJECT_ID = intent.getStringExtra("LEADER_OBJECT_ID");
         } catch (NullPointerException e) {
             Log.e(Boss.LOG_TAG, e.getMessage());
             exit();
@@ -109,15 +114,19 @@ public class FollowLocationAndParseService extends Service {
 
         TimerTask feedLocation;
         final Handler handler = new Handler();
-        t = new Timer();
+        leaderLocationUpdateTimer = new Timer();
         feedLocation = new TimerTask() {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-                        if (OBJECT_ID != null) {
+
+                        if (!kickAcknowledgement)
+                        checkIsKicked();
+
+                        if (LEADER_OBJECT_ID != null) {
 
                             ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_CLASS);
-                            query.getInBackground(OBJECT_ID, new GetCallback<ParseObject>() {
+                            query.getInBackground(LEADER_OBJECT_ID, new GetCallback<ParseObject>() {
                                 public void done(ParseObject object, ParseException e) {
                                     if (e == null) {
                                         if (object != null) {
@@ -134,21 +143,45 @@ public class FollowLocationAndParseService extends Service {
                                 }
                             });
                         }
-                        //getFollowerLoc(map);
                         Log.d(Boss.LOG_TAG + "TIMER", "Timer Running");
                     }
                 });
             }
         };
-        t.schedule(feedLocation, LEADER_LOCATION_UPDATE_INTERVAL, LEADER_LOCATION_UPDATE_INTERVAL); //updates every 5s
+        leaderLocationUpdateTimer.schedule(feedLocation, LEADER_LOCATION_UPDATE_INTERVAL, LEADER_LOCATION_UPDATE_INTERVAL); //updates every 5s
 
+
+    }
+
+    private void checkIsKicked() {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_BLACKLIST_CLASS);
+        query.whereEqualTo(Boss.KEY_DEVICE_ID, device_id);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                for (ParseObject object : list) {
+                    if (object.getString(Boss.KEY_CON_CODE).equals(SESSION_CODE+"")){
+                        alertKicked();
+                        kickAcknowledgement=true;
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void alertKicked() {
+
+        Intent kickedIntent=new Intent(KICKED_TOKEN);
+        FollowLocationAndParseService.this.sendBroadcast(kickedIntent);
 
     }
 
     public void exit() {
 
         try {
-            t.cancel();
+            leaderLocationUpdateTimer.cancel();
         } catch (NullPointerException e) {
             Log.e(Boss.LOG_TAG, e.getMessage());
         }
@@ -207,7 +240,6 @@ public class FollowLocationAndParseService extends Service {
     private void alertNoPermission() {
         Intent noPermission = new Intent(NO_LOCATION_PERMISSION);
         FollowLocationAndParseService.this.sendBroadcast(noPermission);
-        Log.e(Boss.LOG_TAG, "alertNoPermssion() Called");
     }
 
     private void alertDisabledGps() {
@@ -274,8 +306,11 @@ public class FollowLocationAndParseService extends Service {
 
     @Override
     public void onDestroy() {
+
+        kickAcknowledgement=false;
+
         if (!cancelled) {
-            t.cancel();
+            leaderLocationUpdateTimer.cancel();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.removeUpdates(locationListener);
             } else locationManager.removeUpdates(locationListener);
@@ -286,7 +321,7 @@ public class FollowLocationAndParseService extends Service {
 
     public static void updateFollowerStatus(final Boolean status) {
         Log.d(Boss.LOG_TAG, "Updating Follower Status " + status);
-        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_FCLASS);
+        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_FOLLOWERS_CLASS);
         queryID.whereEqualTo(Boss.KEY_DEVICE_ID, device_id );
         queryID.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -294,24 +329,24 @@ public class FollowLocationAndParseService extends Service {
                 if (e == null) {
                     for (ParseObject result : parseObjects) {
                         // Retrieving objectId
-                        FOBJECT_ID = result.getObjectId();
+                        FOLLOWER_OBJECT_ID = result.getObjectId();
                     }
 
                     // Retrieving data from object
-                    if (FOBJECT_ID != null) {
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FCLASS);
-                        query.getInBackground(FOBJECT_ID, new GetCallback<ParseObject>() {
+                    if (FOLLOWER_OBJECT_ID != null) {
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FOLLOWERS_CLASS);
+                        query.getInBackground(FOLLOWER_OBJECT_ID, new GetCallback<ParseObject>() {
                             public void done(ParseObject parseUpdateObject, ParseException e) {
                                 if (e == null) {
                                     parseUpdateObject.put(Boss.KEY_isActive, status);
                                     parseUpdateObject.saveInBackground();
                                 } else {
-                                    Log.e(Boss.LOG_TAG + "FLPS", e.getMessage());
+                                    Log.e(Boss.LOG_TAG, e.getMessage());
                                 }
                             }
                         });
                     } else {
-                        Log.e(Boss.LOG_TAG + "FLPS", "Null ObjectID");
+                        Log.e(Boss.LOG_TAG, "Null ObjectID");
                     }
 
 

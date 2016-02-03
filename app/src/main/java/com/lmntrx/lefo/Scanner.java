@@ -1,15 +1,25 @@
 package com.lmntrx.lefo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Vibrator;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
 import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
@@ -20,11 +30,18 @@ public class Scanner extends AppCompatActivity {
     ScannerLiveView scannerLiveView;
     boolean flashStatus=false;
 
+    Activity thisActivity;
+
+    String device_id="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
+        device_id=Boss.getDeviceID(this);
+
+        thisActivity=this;
 
         scannerLiveView=(ScannerLiveView)findViewById(R.id.scanner);
         scannerLiveView.setScannerViewEventListener(new ScannerLiveView.ScannerViewEventListener() {
@@ -47,7 +64,10 @@ public class Scanner extends AppCompatActivity {
             @Override
             public void onCodeScanned(String data) {
                 SESSION_CODE = data;
-                Thread thread=new Thread(new Runnable() {
+
+                verifyAndStart();
+
+                /*Thread thread=new Thread(new Runnable() {
                     @Override
                     public void run() {
                         int status=Boss.verifySessionCode(SESSION_CODE);
@@ -66,7 +86,7 @@ public class Scanner extends AppCompatActivity {
                         }
                     }
                 });
-                thread.run();
+                thread.run();*/
 
             }
         });
@@ -75,10 +95,74 @@ public class Scanner extends AppCompatActivity {
 
     }
 
+    private void verifyAndStart() {
+        if (!SESSION_CODE.isEmpty()) {
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_BLACKLIST_CLASS);
+            query.whereEqualTo(Boss.KEY_DEVICE_ID, device_id);
+            query.whereEqualTo(Boss.KEY_CON_CODE, SESSION_CODE);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list.isEmpty()) {
+
+                        final int integer_code;
+                        try {
+                            integer_code = Integer.parseInt(SESSION_CODE);
+                        } catch (Exception e1) {
+
+                            inform("Please scan a valid lefo QR code");
+
+                            return;
+                        }
+                        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
+                        queryID.whereEqualTo(Boss.KEY_QRCODE, integer_code);
+                        queryID.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                                if (e == null) {
+                                    if (parseObjects.isEmpty()) {
+
+                                        inform("Please scan a valid lefo QR code");
+
+                                        return;
+                                    } else {
+                                        for (ParseObject result : parseObjects) {
+                                            Boss.OBJECT_ID = result.getObjectId();
+                                            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                                            vibrator.vibrate(50);
+                                            startMaps();
+                                        }
+                                    }
+                                } else {
+                                    inform("Please scan a valid lefo QR code");
+                                }
+                            }
+                        });
+
+
+                    } else {
+                        inform("Sorry, You were kicked from this session");
+                    }
+                }
+            });
+
+        } else {
+            inform("Please scan a valid lefo QR code");
+        }
+    }
+
+    private void inform(String msg) {
+        View view = findViewById(R.id.scanner);
+        Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
     private void startMaps() {
         Intent maps=new Intent(this,MapsActivity.class);
         maps.putExtra("SESSION_CODE",SESSION_CODE);
         startActivity(maps);
+        thisActivity.finish();
     }
 
     @Override
@@ -88,10 +172,22 @@ public class Scanner extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        scannerLiveView.stopScanner();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        scannerLiveView.stopScanner();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
 
         ZXDecoder decoder=new ZXDecoder();
-        decoder.setScanAreaPercent(0.8);
+        decoder.setScanAreaPercent(0.5);
         scannerLiveView.setDecoder(decoder);
 
         try {

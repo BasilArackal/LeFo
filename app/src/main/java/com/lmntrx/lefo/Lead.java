@@ -89,16 +89,12 @@ public class Lead extends AppCompatActivity {
                     Intent intent=new Intent(Lead.this,Followers.class);
                     intent.putExtra("SESSION_CODE",Integer.parseInt(SESSION_CODE));
                     startActivity(intent);
-                    /*Snackbar.make(view, "No Followers", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();*/
                 } else {
-                   // Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
-                    //        .setAction("Action", null).show();
                     isSessionOn = true;
                     canRefresh = false;
                     fab.setImageResource(R.drawable.ic_menu_view);
                     try {
-                        boss.startSession(CON, SESSION_CODE);  //*********************************
+                        boss.startSession(CON, SESSION_CODE);
                     }catch (Exception n){
                         Log.e(Boss.LOG_TAG+"Lead","Unable to start session "+n.getMessage());
                         Boss.alertLostConnection(CON,currentLeadActivity);
@@ -187,8 +183,15 @@ public class Lead extends AppCompatActivity {
             //This Async Task Loads QRCode from qrUrl to qrImg
             new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
         } else {
-            Toast.makeText(this, "Can't refresh during an ongoing LeFo Session", Toast.LENGTH_LONG).show();
+            inform("Can't refresh during an ongoing LeFo Session");
         }
+    }
+
+    private void inform(String msg) {
+
+        View view = findViewById(R.id.qrIMG);
+        Snackbar.make(view,msg,Snackbar.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -273,7 +276,7 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             View view = fab;
-            Snackbar.make(view, "Couldn't locate you, try moving your device", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Couldn'leaderLocationUpdatetimer locate you, try moving your device", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
         }

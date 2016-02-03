@@ -37,9 +37,11 @@ import java.util.Random;
 
 public class Boss {
 
-    public static final int SNACKBAR_DEFINITE = 2;
     public static final int SNACKBAR_INDEFINITE_LAUNCH = 0;
     public static final int SNACKBAR_INDEFINITE_CLOSE = 1;
+
+    //Kicked Follower Token
+    public static final String KICKED_FOLLOWER = "com.lmntrx.lefo.KICKED_FOLLOWER";
     public static boolean DarkTheme = false;
 
     public static final String LOG_TAG = "LeFoLog ";
@@ -50,11 +52,7 @@ public class Boss {
 
     static Intent locationService, followService;
 
-    //try{
-        public static Snackbar snackbar;
-    /*}catch(Exception e){
-
-    }*/
+    public static Snackbar snackbar;
 
     //Parse Authentication Keys
     public final String PARSE_APP_KEY = "U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
@@ -64,7 +62,8 @@ public class Boss {
 
     //Parse Class Name
     public static final String PARSE_CLASS = "LeFo_DB";
-    public static final String PARSE_FCLASS = "Followers";
+    public static final String PARSE_FOLLOWERS_CLASS = "Followers";
+    public static final String PARSE_BLACKLIST_CLASS = "BlackList";
 
     //Parse Keys
     public static final String KEY_QRCODE = "QR_CODE";
@@ -81,8 +80,8 @@ public class Boss {
 
     public static boolean notified = false;
 
-    public Boss(){
-        snackbar = Snackbar.make(Home.HOME_ACTIVITY.findViewById(R.id.leadBTN),"",Snackbar.LENGTH_SHORT);
+    public Boss() {
+        snackbar = Snackbar.make(Home.HOME_ACTIVITY.findViewById(R.id.leadBTN), "", Snackbar.LENGTH_SHORT);
     }
 
 
@@ -307,7 +306,7 @@ public class Boss {
 
         followService = new Intent(context, FollowLocationAndParseService.class);
         followService.putExtra("SESSION_CODE", session_code);
-        followService.putExtra("OBJECT_ID", object_id);
+        followService.putExtra("LEADER_OBJECT_ID", object_id);
         context.startService(followService);
 
     }
@@ -322,7 +321,7 @@ public class Boss {
 
     public static void registerFollower(String SESSION_CODE, Boolean isActive, Context context) {
 
-        ParseObject parseObject = new ParseObject(PARSE_FCLASS);
+        ParseObject parseObject = new ParseObject(PARSE_FOLLOWERS_CLASS);
         parseObject.put(KEY_CON_CODE, SESSION_CODE);
         parseObject.put(KEY_DEVICE, getDeviceName());
         parseObject.put(KEY_isActive, isActive);
@@ -394,8 +393,8 @@ public class Boss {
 
     }
 
-    public static void inform(String msg, View rootView, int duratinChoice) {
-        switch (duratinChoice) {
+    public static void inform(String msg, View rootView, int durationChoice) {
+        switch (durationChoice) {
             case SNACKBAR_INDEFINITE_LAUNCH:
                 snackbar = Snackbar.make(rootView, msg, Snackbar.LENGTH_INDEFINITE);
                 snackbar.show();
@@ -404,8 +403,8 @@ public class Boss {
                 try {
                     if (snackbar.isShown())
                         snackbar.dismiss();
-                }catch (Exception e){
-                    Log.e(Boss.LOG_TAG,e.getMessage());
+                } catch (Exception e) {
+                    Log.e(Boss.LOG_TAG, e.getMessage());
                 }
                 break;
             default:
@@ -413,6 +412,64 @@ public class Boss {
                 snackbar.show();
                 break;
         }
+
+    }
+
+    public static void kickUser(String selectedDeviceID, String selectedDeviceName, String sessionCode, Activity activity) {
+
+        registerInBlackList(sessionCode, selectedDeviceID, selectedDeviceName);
+
+        deleteFollowerWithDevice(selectedDeviceID, activity);
+
+
+    }
+
+    private static void deleteFollowerWithDevice(String selectedDeviceID, final Activity activity) {
+
+        ParseQuery query = new ParseQuery(Boss.PARSE_FOLLOWERS_CLASS);
+        query.whereEqualTo(Boss.KEY_DEVICE_ID, selectedDeviceID);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> results, com.parse.ParseException e) {
+                if (results != null) {
+                    if (e == null) {
+                        for (ParseObject result : results) {
+                            if (result.getString(Boss.KEY_CON_CODE).equals(Lead.SESSION_CODE)) {
+                                try {
+                                    result.delete();
+                                    alertKickedUser(activity);
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                                result.saveInBackground();
+                            }
+
+                        }
+                    } else {
+                        e.printStackTrace();
+                        System.out.print(e.getMessage());
+                    }
+                }
+            }
+        });
+
+    }
+
+    private static void alertKickedUser(Activity activity) {
+
+        Intent kickedUser = new Intent(KICKED_FOLLOWER);
+        activity.sendBroadcast(kickedUser);
+
+    }
+
+    private static void registerInBlackList(String sessionCode, String selectedDeviceID, String selectedDeviceName) {
+
+        ParseObject parseObject = new ParseObject(PARSE_BLACKLIST_CLASS);
+        parseObject.put(KEY_CON_CODE, sessionCode);
+        parseObject.put(KEY_DEVICE, selectedDeviceName);
+        parseObject.put(KEY_DEVICE_ID, selectedDeviceID);
+        parseObject.saveInBackground();
+
 
     }
 }

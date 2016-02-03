@@ -91,6 +91,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         connectionResumed.addAction(ConnectivityReporter.CONNECTION_STATUS_TOKEN_POSITIVE);
         registerReceiver(connectionResumedBR, connectionResumed);
 
+        IntentFilter kicked = new IntentFilter();
+        kicked.addAction(FollowLocationAndParseService.KICKED_TOKEN);
+        registerReceiver(kickedBR, kicked);
+
         try {
             Boss.registerFollower(SESSION_CODE, isActive, context);
         } catch (NullPointerException e) {
@@ -238,6 +242,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         unregisterReceiver(noLocationPermissionBR);
         unregisterReceiver(lostConnectionBR);
         unregisterReceiver(connectionResumedBR);
+        unregisterReceiver(kickedBR);
         super.onDestroy();
     }
 
@@ -251,10 +256,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BroadcastReceiver cannotLocateBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            inform("Couldn't locate you, try moving your device");
-
+            inform("Could not locate you, try moving your device");
         }
     };
+
+    private BroadcastReceiver kickedBR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showIsKickedAlertDialog();
+        }
+    };
+
+    private void showIsKickedAlertDialog() {
+
+        new AlertDialog.Builder(context)
+                .setCancelable(false)
+                .setTitle("Kicked")
+                .setMessage("Sorry, You were kicked by the leader")
+                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        MapsActivity.activity.finish();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+
+    }
 
     private BroadcastReceiver noLocationPermissionBR = new BroadcastReceiver() {
         @Override
@@ -314,14 +342,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BroadcastReceiver lostConnectionBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Boss.inform("Lost Connection", activity.findViewById(R.id.map), 0);
+            Boss.inform("Lost Connection", activity.findViewById(R.id.map), Boss.SNACKBAR_INDEFINITE_LAUNCH);
         }
     };
 
     private BroadcastReceiver connectionResumedBR = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Boss.inform("Connected", activity.findViewById(R.id.map), 1);
+            Boss.inform("Connected", activity.findViewById(R.id.map), Boss.SNACKBAR_INDEFINITE_CLOSE);
         }
     };
 

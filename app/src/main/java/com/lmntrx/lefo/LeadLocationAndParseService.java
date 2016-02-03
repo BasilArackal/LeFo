@@ -145,21 +145,46 @@ public class LeadLocationAndParseService extends Service {
     private void unRegisterAllFollowers() {
 
 
-        ParseQuery query = new ParseQuery(Boss.PARSE_FCLASS);
+        ParseQuery<ParseObject> query = new ParseQuery<>(Boss.PARSE_BLACKLIST_CLASS);
+        query.whereEqualTo(Boss.KEY_CON_CODE, Lead.SESSION_CODE);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> results, com.parse.ParseException e) {
                 if (results != null) {
                     if (e == null) {
                         for (ParseObject result : results) {
-                            if (result.getString(Boss.KEY_CON_CODE).equals(Lead.SESSION_CODE)) {
-                                try {
-                                    result.delete();
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-                                result.saveInBackground();
+
+                            try {
+                                result.delete();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
                             }
+                            result.saveInBackground();
+
+                        }
+                    } else {
+                        e.printStackTrace();
+                        System.out.print(e.getMessage());
+                    }
+                }
+            }
+        });
+
+
+        ParseQuery<ParseObject> followerDetailsQuery = new ParseQuery<>(Boss.PARSE_FOLLOWERS_CLASS);
+        followerDetailsQuery.whereEqualTo(Boss.KEY_CON_CODE, Lead.SESSION_CODE);
+        followerDetailsQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> results, com.parse.ParseException e) {
+                if (results != null) {
+                    if (e == null) {
+                        for (ParseObject result : results) {
+                            try {
+                                result.delete();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                            result.saveInBackground();
 
                         }
                     } else {
@@ -242,9 +267,9 @@ public class LeadLocationAndParseService extends Service {
         Boss.notifySessionRunning(Lead.CON);
     }
 
-    private void alertSessionInterupted() {
-        Intent sessionInterupted = new Intent(SESSION_INTERRUPTED);
-        LeadLocationAndParseService.this.sendBroadcast(sessionInterupted);
+    private void alertSessionInterrupted() {
+        Intent sessionInterrupted = new Intent(SESSION_INTERRUPTED);
+        LeadLocationAndParseService.this.sendBroadcast(sessionInterrupted);
     }
 
     private void updateParseDB(int session_code) {
@@ -281,7 +306,7 @@ public class LeadLocationAndParseService extends Service {
                             });
                         }
                     } else {
-                        //Incase of an unknown error
+                        //In case of an unknown error
                         Log.e(Boss.LOG_TAG + "Update", e.getMessage());
                     }
                 }
@@ -305,7 +330,7 @@ public class LeadLocationAndParseService extends Service {
             } catch (NullPointerException e) {
                 Log.e(Boss.LOG_TAG, e.getMessage());
                 Boss.removeNotification();
-                alertSessionInterupted();
+                alertSessionInterrupted();
                 exit();
             }
         } else {
@@ -325,7 +350,7 @@ public class LeadLocationAndParseService extends Service {
     @SuppressLint("LongLogTag")
     private void deleteSession() {
         Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "deleteSession() called");
-        ParseQuery query = new ParseQuery(Boss.PARSE_CLASS);
+        ParseQuery<ParseObject> query = new ParseQuery<>(Boss.PARSE_CLASS);
         query.whereEqualTo(Boss.KEY_QRCODE, SESSION_CODE);
 
         try {

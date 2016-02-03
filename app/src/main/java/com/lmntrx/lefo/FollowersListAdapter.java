@@ -50,4 +50,10 @@ public class FollowersListAdapter extends ArrayAdapter<String> {
 
         return view;
     }
+
+
+    @Override
+    public void remove(String object) {
+        super.remove(object);
+    }
 }
