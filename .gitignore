@@ -1,12 +1,17 @@
 #Miscellaneous
 *.iml
 *.jks
-.idea/
+.idea/misc.xml
+.idea/modules.xml
+.idea/libraries/
+.idea/workspace.xml
+
 
 #Mac OSX
 .DS_Store
 
 # Built application files
+apk/
 *.apk
 *.ap_
 
