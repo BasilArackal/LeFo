@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="20sp"
-            android:text="Live Track Disabled"
+            android:text="@string/live_track_disabled_text"
             android:textColor="@color/textColorSecondary"
             android:layout_weight="3"/>
         <Switch
@@ -36,7 +36,7 @@
 
     <LinearLayout
         android:weightSum="3"
-        android:id="@+id/linearlayout"
+        android:id="@+id/linearLayout1"
         android:layout_below="@+id/switchLinearLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="When disabled, no one can track you in live track mode  Note: Does not apply to Journey mode"
+        android:text="@string/live_track_disabled_warning_text"
         android:textColor="@color/textColorSecondary"
         android:visibility="visible" />
 
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="YOUR LIVE TRACK CODE"
+            android:text="@string/your_live_track_code_label"
             android:id="@+id/textView"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/textColorSecondary"
@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Loading Code"
+            android:text="@string/loading_code_label"
             android:id="@+id/TextView_LiveTrackCode"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/textColorSecondary"

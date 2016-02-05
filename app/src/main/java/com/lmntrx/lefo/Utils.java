@@ -1,26 +1,23 @@
 package com.lmntrx.lefo;
 
-/**
+/*
  * Created by ACJLionsRoar on 1/25/16.
  */
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.RequiresPermission;
-import android.support.v4.content.IntentCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 public class Utils {
     private static int sTheme;
-    public final static int SET_THEME_T0_LIGHT_NOACTIONBAR = 0;
-    public final static int SET_THEME_TO_DARK_NOACTIONBAR = 1;
-    public final static int SET_THEME_T0_LIGHT = 2;
-    public final static int SET_THEME_TO_DARK = 3;
+    public final static int SET_THEME_T0_LIGHT_NO_ACTION_BAR = 0;
+    public final static int SET_THEME_TO_DARK_NO_ACTION_BAR = 1;
 
 
-    /**
+    /*
      * Set the theme of the Activity, and restart it by creating a new Activity of the same type.
      */
 
@@ -52,7 +49,7 @@ public class Utils {
                     View view2 = activity.getWindow().getDecorView();
                     view2.setBackgroundColor(Color.BLACK);
                     Utils obj = new Utils();
-                    obj.showtoast(activity);
+                    obj.showToast(activity);
                     break;
             }
 
@@ -69,7 +66,7 @@ public class Utils {
                     View view2 = activity.getWindow().getDecorView();
                     view2.setBackgroundColor(Color.BLACK);
                     Utils obj = new Utils();
-                    obj.showtoast(activity);
+                    obj.showToast(activity);
                     break;
             }
     }
@@ -81,25 +78,26 @@ public class Utils {
             View view2 = activity.getWindow().getDecorView();
             view2.setBackgroundColor(Color.BLACK);
             Utils obj = new Utils();
-            obj.showtoast(activity);
+            obj.showToast(activity);
         }
 
     }
 
     public static void RetainTheme(Activity activity, int NoActionBar) {
 
+        Log.d(Boss.LOG_TAG,NoActionBar+" Retain Theme");
 
         if (Boss.DarkTheme) {
             activity.setTheme(R.style.AppTheme_Dark_NoActionBar);
             View view2 = activity.getWindow().getDecorView();
             view2.setBackgroundColor(Color.BLACK);
             Utils obj = new Utils();
-            obj.showtoast(activity);
+            obj.showToast(activity);
         }
 
     }
 
-    public void showtoast(Activity activity) {
+    public void showToast(Activity activity) {
         Toast.makeText(activity, "DarkTheme Colors Not Optimised. Only Functionality Enabled.", Toast.LENGTH_SHORT).show();
     }
 

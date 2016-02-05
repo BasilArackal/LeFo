@@ -97,10 +97,11 @@ public class Boss {
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
+        String user = Build.USER;
         if (model.startsWith(manufacturer)) {
-            return capitalize(model);
+            return capitalize(user + model);
         } else {
-            return capitalize(manufacturer) + " " + model;
+            return capitalize(user+" "+manufacturer+ " " + model) ;
         }
     }
 
@@ -155,6 +156,7 @@ public class Boss {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static void notifySessionRunning(Context context) {
         Lead.canRefresh = false;
@@ -170,6 +172,7 @@ public class Boss {
 
         Intent contentIntent = new Intent(context, Lead.class);
         PendingIntent contentPendingIntent = PendingIntent.getBroadcast(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
 
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
@@ -314,7 +317,6 @@ public class Boss {
                                             System.exit(0);
                                         }
                                     }
-                                    Log.e(Boss.LOG_TAG, "Here Man");
 
                                 } else {
                                     Boss.closeFollowSession(context);
@@ -382,7 +384,7 @@ public class Boss {
 
     private static void deleteFollowerWithDevice(String selectedDeviceID, final Activity activity) {
 
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Boss.PARSE_FOLLOWERS_CLASS);
+        ParseQuery<ParseObject> query = new ParseQuery<>(Boss.PARSE_FOLLOWERS_CLASS);
         query.whereEqualTo(Boss.KEY_DEVICE_ID, selectedDeviceID);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override

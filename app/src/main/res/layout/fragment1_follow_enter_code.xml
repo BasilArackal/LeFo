@@ -17,8 +17,7 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:maxLength="10"
-        android:minLines="1"
-        android:numeric="integer" />
+        android:minLines="1"/>
 
     <Button
         android:layout_below="@+id/codeTxt"

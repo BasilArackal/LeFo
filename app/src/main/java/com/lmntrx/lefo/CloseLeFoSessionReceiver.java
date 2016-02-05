@@ -1,12 +1,11 @@
 package com.lmntrx.lefo;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-/**
+/*
  * Created by livin on 12/1/16.
  */
 

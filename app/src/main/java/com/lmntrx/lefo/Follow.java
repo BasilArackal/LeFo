@@ -102,7 +102,6 @@ public class Follow extends AppCompatActivity {
 
                                         inform("Please Enter a valid session code");
 
-                                        return;
                                     } else {
                                         for (ParseObject result : parseObjects) {
                                             Boss.OBJECT_ID = result.getObjectId();

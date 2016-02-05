@@ -103,7 +103,6 @@ public class Scanner extends AppCompatActivity {
 
                                         inform("Please scan a valid lefo QR code");
 
-                                        return;
                                     } else {
                                         for (ParseObject result : parseObjects) {
                                             Boss.OBJECT_ID = result.getObjectId();

@@ -8,9 +8,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-public class Livetrack extends AppCompatActivity {
+public class LiveTrack extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,7 @@ public class Livetrack extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),Home.class);
                 startActivity(intent);
-                Livetrack.this.finish();
+                LiveTrack.this.finish();
             }
         };
         tab1.setOnClickListener(button1);
@@ -49,15 +48,15 @@ public class Livetrack extends AppCompatActivity {
                   //  switch1.toggle();
                     textView1.setVisibility(View.VISIBLE);
                     textView2.setVisibility(View.VISIBLE);
-                    textView3.setText("When enabled, any of your friends can track you via LeFo.Note: Disable after use.");
-                    textView4.setText("Live Track Enabled");
+                    textView3.setText(R.string.live_track_enabled_warning);
+                    textView4.setText(R.string.live_track_enabled_text);
                 } else {
                     // The toggle is disabled
                   //  switch1.toggle();
                     textView1.setVisibility(View.GONE);
                     textView2.setVisibility(View.GONE);
-                    textView3.setText("When disabled, no one can track you in live track mode.Note: Does not apply to Journey mode");
-                    textView4.setText("Live Track Disabled");
+                    textView3.setText(R.string.live_track_disabled_warning_text);
+                    textView4.setText(R.string.live_track_disabled_text);
                 }
             }
         });

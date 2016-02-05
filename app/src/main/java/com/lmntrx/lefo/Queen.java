@@ -40,7 +40,7 @@ public class Queen extends Fragment {
             // ToggleButton switch1 = (ToggleButton) rootView.findViewById(R.id.liveTrackSwitch) ;
 
 
-            return inflater.inflate(R.layout.fragment3_livetrack_you, parentViewGroup, false);
+            return inflater.inflate(R.layout.fragment3_live_track_you, parentViewGroup, false);
 
 
 
@@ -52,7 +52,7 @@ public class Queen extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            return inflater.inflate(R.layout.fragment4_livetrack_others, parentViewGroup, false);
+            return inflater.inflate(R.layout.fragment4_live_track_others, parentViewGroup, false);
         }
 
     }

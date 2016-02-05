@@ -31,7 +31,8 @@
             android:id="@+id/tab1"
             android:text="@string/journeyTab"
             android:textColor="@color/textColorPrimary"
-            android:background="@color/colorPrimary"/>
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:layout_width="match_parent"
@@ -41,7 +42,8 @@
             android:onClick="startLiveTrack"
             android:text="@string/liveTrackTab"
             android:textColor="@color/textColorPrimary"
-            android:background="@color/colorPrimary"/>
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
 
 
@@ -68,7 +70,7 @@
         <Button
             android:layout_width="231dp"
             android:layout_height="wrap_content"
-            android:text="@string/followbtn"
+            android:text="@string/followBtn"
             android:id="@+id/followBTN"
             android:onClick="startFollow"
             android:layout_gravity="center_horizontal"

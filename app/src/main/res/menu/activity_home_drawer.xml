@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Import"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Gallery"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Slideshow"
+            tools:ignore="HardcodedText" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Tools"
+            tools:ignore="HardcodedText" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Communicate"
+        tools:ignore="HardcodedText">
 
 
         <menu>
             <item
-                android:id="@+id/changethemetemporary"
+                android:id="@+id/changeThemeTemporary"
                 android:title="SWITCH THEMES NOW!" />
             <item
                 android:id="@+id/nav_share"

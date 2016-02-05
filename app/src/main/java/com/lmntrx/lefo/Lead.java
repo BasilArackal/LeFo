@@ -1,6 +1,5 @@
 package com.lmntrx.lefo;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -8,13 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,9 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Random;
 
 public class Lead extends AppCompatActivity {
 
@@ -105,8 +97,8 @@ public class Lead extends AppCompatActivity {
 
 
         //Display Lefo_Connection_Code
-        TextView lcodeTXT = (TextView) findViewById(R.id.sessionCodeTxt);
-        lcodeTXT.setText(SESSION_CODE);
+        TextView connectionCodeTextView = (TextView) findViewById(R.id.sessionCodeTxt);
+        connectionCodeTextView.setText(SESSION_CODE);
 
         //This Async Task Loads QRCode from qrUrl to qrImg
         new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
@@ -177,8 +169,8 @@ public class Lead extends AppCompatActivity {
             SESSION_CODE = Boss.genLeFoCode() + "";
 
             //Display Lefo_Connection_Code
-            TextView lcodeTXT = (TextView) findViewById(R.id.sessionCodeTxt);
-            lcodeTXT.setText(SESSION_CODE);
+            TextView sessionCodeTextView = (TextView) findViewById(R.id.sessionCodeTxt);
+            sessionCodeTextView.setText(SESSION_CODE);
 
             //This Async Task Loads QRCode from qrUrl to qrImg
             new Load_QRCode(qrUrl + SESSION_CODE + qrUrl2Size, qrImg).execute();
@@ -276,7 +268,7 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             View view = fab;
-            Snackbar.make(view, "Couldn'leaderLocationUpdatetimer locate you, try moving your device", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Couldn't locate you, try moving your device", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
         }
@@ -286,7 +278,7 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             View view = fab;
-            Log.d(Boss.LOG_TAG, "Recieved BR");
+            Log.d(Boss.LOG_TAG, "Received BR");
             Snackbar.make(view, "Sorry, Session Failed. Please grant permission to access location and try again.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Action", null).show();
             Boss.askPermission("LOCATION", currentLeadActivity);
@@ -297,7 +289,7 @@ public class Lead extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             View view = fab;
-            Log.d(Boss.LOG_TAG, "Recieved BR");
+            Log.d(Boss.LOG_TAG, "Received BR");
             Snackbar.make(view, "Started LeFo Session. Go back to exit. Safe Journey!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }

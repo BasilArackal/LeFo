@@ -39,7 +39,7 @@ public class Followers extends AppCompatActivity {
     String selectedDeviceID = "", selectedDeviceName = "";
 
 
-    HashMap<String, String> selectedListItemObject = new HashMap<String, String>();
+    HashMap<String, String> selectedListItemObject = new HashMap<>();
 
     final int REFRESH_FREQUENCY = 2000;
 
@@ -47,7 +47,7 @@ public class Followers extends AppCompatActivity {
 
     public static Boolean devicesActiveStatus[] = new Boolean[15];
 
-    public static ArrayList<HashMap<String, String>> FOLLOWERS_DETAILS = new ArrayList<HashMap<String, String>>();
+    public static ArrayList<HashMap<String, String>> FOLLOWERS_DETAILS = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,12 +155,15 @@ public class Followers extends AppCompatActivity {
 
         // Code to show follower details ......................
 
+        Log.d(Boss.LOG_TAG,selectedDeviceID);
+
     }
 
 
     public void loadFollowers() {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_FOLLOWERS_CLASS);
+        query.whereEqualTo(Boss.KEY_CON_CODE,SESSION_CODE+"");
         try {
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
@@ -170,18 +173,18 @@ public class Followers extends AppCompatActivity {
                             Log.e(Boss.LOG_TAG, "Empty");
                         }
                         if (e == null) {
-                            ArrayList<HashMap<String, String>> details = new ArrayList<HashMap<String, String>>();
+                            ArrayList<HashMap<String, String>> details = new ArrayList<>();
                             for (ParseObject result : results) {
-                                HashMap<String, String> info = new HashMap<String, String>();
-                                if ((SESSION_CODE + "").equals(result.getString(Boss.KEY_CON_CODE))) {
+                                HashMap<String, String> info = new HashMap<>();
+                                //if ((SESSION_CODE + "").equals(result.getString(Boss.KEY_CON_CODE))) {
                                     info.put(Boss.KEY_DEVICE_ID, result.getString(Boss.KEY_DEVICE_ID));
                                     info.put(Boss.KEY_DEVICE, result.getString(Boss.KEY_DEVICE));
                                     info.put(Boss.KEY_isActive, result.getBoolean(Boss.KEY_isActive) + "");
                                     details.add(info);
-                                }
+                                //}
                             }
                             if (details.isEmpty()) {
-                                HashMap<String, String> info = new HashMap<String, String>();
+                                HashMap<String, String> info = new HashMap<>();
                                 info.put(Boss.KEY_DEVICE, "No Followers");
                                 details.add(info);
                             }

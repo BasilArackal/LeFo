@@ -16,17 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.ParseAnalytics;
 
 // extending from just Activity removes Actionbar automatically. extending from AppCompatActivity includes Actionbar
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int REQUEST_GOOGLE_PLAY_SERVICES = 2100;
     Boss boss;
 
     public static Activity HOME_ACTIVITY;
@@ -140,11 +135,11 @@ public class Home extends AppCompatActivity
         }
 
         //   /*
-        else if (id == R.id.changethemetemporary) {
+        else if (id == R.id.changeThemeTemporary) {
             ManuallyChanged=true;
             if (!Boss.DarkTheme) {
                 Boss.DarkTheme = true;
-                Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK_NOACTIONBAR);  //  means dark theme
+                Utils.changeToTheme(this, Utils.SET_THEME_TO_DARK_NO_ACTION_BAR);  //  means dark theme
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("DARK_THEME", true);
@@ -152,7 +147,7 @@ public class Home extends AppCompatActivity
 
             } else {
                 Boss.DarkTheme = false;
-                Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT_NOACTIONBAR); //  is light theme
+                Utils.changeToTheme(this, Utils.SET_THEME_T0_LIGHT_NO_ACTION_BAR); //  is light theme
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("DARK_THEME", false);
@@ -193,7 +188,7 @@ public class Home extends AppCompatActivity
     }
 
     public void startLiveTrack(View v) {
-        Intent intent = new Intent(this, Livetrack.class);
+        Intent intent = new Intent(this, LiveTrack.class);
 
         startActivity(intent);
         Home.this.finish();
@@ -223,34 +218,6 @@ public class Home extends AppCompatActivity
         editor.apply();
 
         super.onPause();
-    }
-
-
-    private void startRegistrationService() {
-        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
-        int code = api.isGooglePlayServicesAvailable(this);
-        if (code == ConnectionResult.SUCCESS) {
-            onActivityResult(REQUEST_GOOGLE_PLAY_SERVICES, Activity.RESULT_OK, null);
-        } else if (api.isUserResolvableError(code)) {
-            api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES);
-        } else {
-            String str = GoogleApiAvailability.getInstance().getErrorString(code);
-            Toast.makeText(this, str, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
-            case REQUEST_GOOGLE_PLAY_SERVICES:
-                if (resultCode != Activity.RESULT_OK) {
-                    Toast.makeText(this," ",Toast.LENGTH_LONG).show();
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
 

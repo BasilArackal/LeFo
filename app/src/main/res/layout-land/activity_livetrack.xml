@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Livetrack">
+    tools:context=".LiveTrack">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -21,16 +21,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab1"
-            android:text="Journey"
-            android:background="@color/colorPrimary"/>
+            android:text="@string/journeyTab"
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab2"
-            android:text="Live Track"
-            android:background="@color/colorPrimary" />
+            android:text="@string/liveTrackTab"
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 
@@ -42,7 +44,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="2">
+        android:weightSum="2"
+        android:baselineAligned="false">
 
 
 
@@ -52,7 +55,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:name="com.lmntrx.lefo.Queen$fragment4_liveTrack_others"
-            tools:layout="@layout/fragment4_livetrack_others" />
+            tools:layout="@layout/fragment4_live_track_others" />
 
         <fragment
             android:id="@+id/fragment3"
@@ -60,7 +63,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:name="com.lmntrx.lefo.Queen$fragment3_liveTrack_you"
-            tools:layout="@layout/fragment3_livetrack_you" />
+            tools:layout="@layout/fragment3_live_track_you" />
 
 
     </LinearLayout>

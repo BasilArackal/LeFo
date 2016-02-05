@@ -25,16 +25,20 @@
             android:layout_weight="1"
             android:id="@+id/tab1"
             android:text="@string/journeyTab"
-            android:background="@color/colorPrimary"/>
+            android:textColor="@color/textColorPrimary"
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
         <Button
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/tab2"
+            android:onClick="startLiveTrack"
             android:text="@string/liveTrackTab"
-            android:background="@color/colorPrimary"/>
+            android:textColor="@color/textColorPrimary"
+            android:background="@color/colorPrimary"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
     <LinearLayout
@@ -42,15 +46,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/qrIMG"
             android:gravity="center"
-            android:src="@drawable/loadingnew"
-            />
+            android:src="@drawable/loading_new"
+            android:contentDescription="@string/qrCode_here_text" />
 
 
 
