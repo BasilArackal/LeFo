@@ -2,7 +2,6 @@
 *.iml
 *.jks
 .idea/misc.xml
-.idea/modules.xml
 .idea/libraries/
 .idea/workspace.xml
 
