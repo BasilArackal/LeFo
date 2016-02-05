@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/qrcode_scan_hint"
+        android:text="@string/qr_code_scan_hint"
         android:id="@+id/scannerHintTxt"
         android:textColor="@color/textColorPrimary"
         android:background="@color/colorAccent_darkTheme"

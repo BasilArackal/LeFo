@@ -2,7 +2,6 @@ package com.lmntrx.lefo;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -63,30 +61,10 @@ public class Scanner extends AppCompatActivity {
 
             @Override
             public void onCodeScanned(String data) {
+
                 SESSION_CODE = data;
 
                 verifyAndStart();
-
-                /*Thread thread=new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int status=Boss.verifySessionCode(SESSION_CODE);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (status == Boss.SESSION_APPROVED) {
-                            Vibrator vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
-                            vibrator.vibrate(50);
-                            startMaps();
-                            Scanner.this.finish();
-                        } else {
-                            Toast.makeText(Scanner.this, "Validation Error, Please scan a valid LeFo QR Code\n" + SESSION_CODE, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-                thread.run();*/
 
             }
         });

@@ -16,7 +16,7 @@
         android:layout_centerHorizontal="true"
         android:weightSum="2"
         android:gravity="center_horizontal"
-        android:background="@drawable/adddropshadow"
+        android:background="@drawable/add_drop_shadow"
         android:id="@+id/linearLayout1"
         >
 
@@ -24,16 +24,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:id="@+id/tab1"
-            android:text="Journey"
+            android:text="@string/journeyTab"
             android:background="@color/colorPrimary"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:id="@+id/tab2"
-            android:text="Live Track"
+            android:text="@string/liveTrackTab"
             android:background="@color/colorPrimary"/>
 
     </LinearLayout>
@@ -42,7 +44,7 @@
 <LinearLayout
     android:baselineAligned="false"
     android:layout_below="@+id/linearLayout1"
-    android:id="@+id/linearlayout2"
+    android:id="@+id/linear_layout2"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -55,16 +57,16 @@
             android:id="@+id/fragment1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:name="com.lmntrx.lefo.Queen$fragment1_follow_entercode"
-            tools:layout="@layout/fragment1_follow_entercode" />
+            android:name="com.lmntrx.lefo.Queen$fragment1_follow_enter_code"
+            tools:layout="@layout/fragment1_follow_enter_code" />
 
         <fragment
             android:layout_weight="1"
             android:id="@+id/fragment2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:name="com.lmntrx.lefo.Queen$fragment2_follow_scanqr"
-            tools:layout="@layout/fragment2_follow_scanqr" />
+            android:name="com.lmntrx.lefo.Queen$fragment2_follow_scanner"
+            tools:layout="@layout/fragment2_follow_scanner" />
 
 </LinearLayout>
 

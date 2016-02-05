@@ -13,7 +13,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -23,11 +26,11 @@ import java.util.List;
 
 public class Follow extends AppCompatActivity {
 
+    private static final int REQUEST_GOOGLE_PLAY_SERVICES = 2100;
+
     public String SESSION_CODE = null;
     EditText codeTXT;
     Activity thisActivity;
-
-    private static int VERIFIED_STATUS = -1;
 
     String device_id = "";
 
@@ -57,13 +60,16 @@ public class Follow extends AppCompatActivity {
     }
 
     public void startJourney(View view) {
-        try {
-            SESSION_CODE = codeTXT.getText() + "";
-            verifyAndStart();
-        } catch (NullPointerException e) {
-            Log.e(Boss.LOG_TAG + "Follow", "NullPointerException Code Empty");
-            inform("Please enter a session code");
+        if (startRegistrationService()) {
+            try {
+                SESSION_CODE = codeTXT.getText() + "";
+                verifyAndStart();
+            } catch (NullPointerException e) {
+                Log.e(Boss.LOG_TAG + "Follow", "NullPointerException Code Empty");
+                inform("Please enter a session code");
+            }
         }
+
     }
 
     private void verifyAndStart() {
@@ -131,7 +137,12 @@ public class Follow extends AppCompatActivity {
     }
 
     public void openQRScanner(View view) {
-        startActivity(new Intent(this, Scanner.class));
+
+
+        if (startRegistrationService()) {
+            startActivity(new Intent(this, Scanner.class));
+        }
+
     }
 
     private void inform(String msg) {
@@ -161,7 +172,43 @@ public class Follow extends AppCompatActivity {
         unregisterReceiver(lostConnectionBR);
         unregisterReceiver(connectionResumedBR);
 
+        ConnectivityReporter.SURRENDER=true;
+
 
         super.onDestroy();
     }
+
+
+    private Boolean startRegistrationService() {
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int code = api.isGooglePlayServicesAvailable(this);
+        if (code == ConnectionResult.SUCCESS) {
+            onActivityResult(REQUEST_GOOGLE_PLAY_SERVICES, Activity.RESULT_OK, null);
+            return true;
+        } else if (api.isUserResolvableError(code)) {
+            api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES);
+            return false;
+        } else {
+            String str = GoogleApiAvailability.getInstance().getErrorString(code);
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode != Activity.RESULT_OK) {
+                    ConnectivityReporter.SURRENDER=true;
+                    thisActivity.finish();
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
 }

@@ -16,13 +16,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.ParseAnalytics;
 
 // extending from just Activity removes Actionbar automatically. extending from AppCompatActivity includes Actionbar
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int REQUEST_GOOGLE_PLAY_SERVICES = 2100;
     Boss boss;
 
     public static Activity HOME_ACTIVITY;
@@ -33,6 +37,9 @@ public class Home extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         HOME_ACTIVITY=this;
+
+        /*if (savedInstanceState == null)
+            startRegistrationService();*/
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
@@ -76,8 +83,6 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        //Toast.makeText(this,boss.getDeviceName(),Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -201,7 +206,6 @@ public class Home extends AppCompatActivity
         Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
 
         super.onResume();
-        boss.checkGooglePlayServiceStatus(this);
     }
 
     @Override
@@ -220,4 +224,34 @@ public class Home extends AppCompatActivity
 
         super.onPause();
     }
+
+
+    private void startRegistrationService() {
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int code = api.isGooglePlayServicesAvailable(this);
+        if (code == ConnectionResult.SUCCESS) {
+            onActivityResult(REQUEST_GOOGLE_PLAY_SERVICES, Activity.RESULT_OK, null);
+        } else if (api.isUserResolvableError(code)) {
+            api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES);
+        } else {
+            String str = GoogleApiAvailability.getInstance().getErrorString(code);
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode != Activity.RESULT_OK) {
+                    Toast.makeText(this," ",Toast.LENGTH_LONG).show();
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
 }

@@ -20,10 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -45,8 +42,6 @@ public class Boss {
     public static boolean DarkTheme = false;
 
     public static final String LOG_TAG = "LeFoLog ";
-
-    public static int SESSION_APPROVED = 2, VERIFIED_STATUS = 1;
 
     public static int LEADER_MARKER = 1, FOLLOWER_MARKER = 2;
 
@@ -97,17 +92,6 @@ public class Boss {
     public boolean isGpsEnabled(Context context) {
         final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
-
-    public void checkGooglePlayServiceStatus(Context context) {
-        int statusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (statusCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
-                Toast.makeText(context, statusCode + ": Update or install Google play services to continue", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(context, statusCode + ": Google play services not available", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     public static String getDeviceName() {
@@ -186,6 +170,8 @@ public class Boss {
 
         Intent contentIntent = new Intent(context, Lead.class);
         PendingIntent contentPendingIntent = PendingIntent.getBroadcast(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
         builder.setContentTitle("LeFo Session Running");
         builder.setContentText("Session Code:" + Lead.SESSION_CODE);
@@ -270,36 +256,6 @@ public class Boss {
         } catch (NullPointerException e) {
             Log.e(Boss.LOG_TAG, e.getMessage());
         }
-    }
-
-    public static int verifySessionCode(final String session_code) {
-        final int integer_code;
-        try {
-            integer_code = Integer.parseInt(session_code);
-        } catch (Exception e) {
-            return 1;
-        }
-        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(PARSE_CLASS);
-        queryID.whereEqualTo(KEY_QRCODE, integer_code);
-        queryID.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (parseObjects.isEmpty()) {
-                        VERIFIED_STATUS = 1;
-                    } else {
-                        for (ParseObject result : parseObjects) {
-                            OBJECT_ID = result.getObjectId();
-                            VERIFIED_STATUS = 2;
-                        }
-                    }
-                } else {
-                    VERIFIED_STATUS = 1;
-                }
-            }
-        });
-
-        return VERIFIED_STATUS;
     }
 
     public static void startFollowSession(String session_code, String object_id, Context context) {
@@ -426,7 +382,7 @@ public class Boss {
 
     private static void deleteFollowerWithDevice(String selectedDeviceID, final Activity activity) {
 
-        ParseQuery query = new ParseQuery(Boss.PARSE_FOLLOWERS_CLASS);
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Boss.PARSE_FOLLOWERS_CLASS);
         query.whereEqualTo(Boss.KEY_DEVICE_ID, selectedDeviceID);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override

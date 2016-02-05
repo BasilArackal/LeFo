@@ -351,7 +351,7 @@ public class FollowLocationAndParseService extends Service {
 
 
                 } else {
-                    Log.e(Boss.LOG_TAG + "FLPS", e.getMessage());
+                    Log.e(Boss.LOG_TAG , e.getMessage());
                 }
             }
         });

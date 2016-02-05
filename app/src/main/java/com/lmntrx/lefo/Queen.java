@@ -6,32 +6,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
+/*
  * Created by ACJLionsRoar on 1/31/16.
  */
+
 public class Queen extends Fragment {
 
-    public static class fragment1_follow_entercode extends Queen{
+    public static class fragment1_follow_enter_code extends Queen{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            return inflater.inflate(R.layout.fragment1_follow_entercode, parentViewGroup, false);
+            return inflater.inflate(R.layout.fragment1_follow_enter_code, parentViewGroup, false);
         }
 
     }
 
-    public static class fragment2_follow_scanqr extends Queen{
+    public static class fragment2_follow_scanner extends Queen{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
 
-            return inflater.inflate(R.layout.fragment2_follow_scanqr, parentViewGroup, false);
+            return inflater.inflate(R.layout.fragment2_follow_scanner, parentViewGroup, false);
         }
 
     }
 
-    public static class fragment3_livetrack_you extends Queen {
+    public static class fragment3_liveTrack_you extends Queen {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class Queen extends Fragment {
         }
 
     }
-    public static class fragment4_livetrack_others extends Queen{
+    public static class fragment4_liveTrack_others extends Queen{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup parentViewGroup,
                                  Bundle savedInstanceState) {

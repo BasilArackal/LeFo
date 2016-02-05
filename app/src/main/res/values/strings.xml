@@ -72,7 +72,7 @@
     <string name="guestBtn">Guest</string>
     <string name="loginBtn">Login</string>
     <string name="journeyTab">Journey</string>
-    <string name="livetrackTab">Live Track</string>
+    <string name="liveTrackTab">Live Track</string>
     <string name="leadBtn">Lead</string>
     <string name="followbtn">Follow</string>
     <string name="title_activity_lead">Lead</string>
@@ -83,7 +83,7 @@
     <string name="toggle_flash">Toggle Flash</string>
     <string name="start_journey_follower">Start Journey</string>
     <string name="title_activity_maps">Map</string>
-    <string name="qrcode_scan_hint">Frame the QR code in the viewfinder screen</string>
+    <string name="qr_code_scan_hint">Frame the QR code in the viewfinder screen</string>
     <string name="list_item_default_text">No Followers</string>
     <string name="status_icon_description">Follower Status Icon</string>
     <string name="followers_list_cab_delete_action">Kick</string>
