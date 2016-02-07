@@ -152,7 +152,7 @@ public class Boss {
             Lead.canRefresh = true;
         } catch (Exception e) {
 
-            Log.e(Boss.LOG_TAG, e.getMessage());
+            Log.e(Boss.LOG_TAG, e.getMessage()+" ");
         }
     }
 
