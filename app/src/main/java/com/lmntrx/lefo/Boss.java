@@ -396,6 +396,7 @@ public class Boss {
                                 try {
                                     result.delete();
                                     alertKickedUser(activity);
+                                    Followers.progressBar.setVisibility(View.INVISIBLE);
                                 } catch (ParseException e1) {
                                     e1.printStackTrace();
                                 }

@@ -10,11 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseObject;
@@ -32,6 +33,8 @@ public class Followers extends AppCompatActivity {
     ListView listView;
     Context context;
 
+    public static ProgressBar progressBar;
+
     FollowersListAdapter listAdapter;
 
     Activity thisActivity;
@@ -39,7 +42,7 @@ public class Followers extends AppCompatActivity {
     String selectedDeviceID = "", selectedDeviceName = "";
 
 
-    HashMap<String, String> selectedListItemObject = new HashMap<>();
+    public static HashMap<String, String> selectedListItemObject = new HashMap<>();
 
     final int REFRESH_FREQUENCY = 2000;
 
@@ -56,6 +59,9 @@ public class Followers extends AppCompatActivity {
         setContentView(R.layout.activity_followers);
 
         thisActivity = this;
+
+        progressBar=(ProgressBar)findViewById(R.id.progressBar);
+
 
         try {
             SESSION_CODE = Integer.parseInt(Lead.SESSION_CODE);
@@ -82,6 +88,7 @@ public class Followers extends AppCompatActivity {
         registerReceiver(kickedFollowerBR, kickedFollower);
 
 
+
         t = new Timer();
         final Handler handler = new Handler();
         TimerTask task = new TimerTask() {
@@ -99,19 +106,6 @@ public class Followers extends AppCompatActivity {
 
         registerForContextMenu(listView);
 
-        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String selectedDevice = FOLLOWERS_DETAILS.get(position).get(Boss.KEY_DEVICE);
-
-                Boss.inform("You selected "+selectedDevice,listView,Boss.SNACKBAR_DEFINITE);
-
-
-                return true;
-            }
-        });*/
-
     }
 
 
@@ -126,12 +120,8 @@ public class Followers extends AppCompatActivity {
                     break;
                 }
             }
-
-
-
             menu.setHeaderTitle(selectedDeviceName);
             menu.add(0, v.getId(), 0, "Kick");//groupId, itemId, order, title
-            menu.add(0, v.getId(), 0, "View Details");
             super.onCreateContextMenu(menu, v, menuInfo);
         } else menu.close();
     }
@@ -141,22 +131,12 @@ public class Followers extends AppCompatActivity {
 
 
         if (item.getTitle() == "Kick") {
+            progressBar.setVisibility(View.VISIBLE);
             Boss.kickUser(selectedDeviceID, selectedDeviceName, Lead.SESSION_CODE, thisActivity);
-        } else if (item.getTitle() == "View Details") {
-            Toast.makeText(getApplicationContext(), "Viewing user", Toast.LENGTH_LONG).show();
-            showFollowerDetails(selectedDeviceID);
         } else {
             return false;
         }
         return true;
-    }
-
-    private void showFollowerDetails(String selectedDeviceID) {
-
-        // Code to show follower details ......................
-
-        Log.d(Boss.LOG_TAG,selectedDeviceID);
-
     }
 
 
@@ -176,12 +156,10 @@ public class Followers extends AppCompatActivity {
                             ArrayList<HashMap<String, String>> details = new ArrayList<>();
                             for (ParseObject result : results) {
                                 HashMap<String, String> info = new HashMap<>();
-                                //if ((SESSION_CODE + "").equals(result.getString(Boss.KEY_CON_CODE))) {
                                     info.put(Boss.KEY_DEVICE_ID, result.getString(Boss.KEY_DEVICE_ID));
                                     info.put(Boss.KEY_DEVICE, result.getString(Boss.KEY_DEVICE));
                                     info.put(Boss.KEY_isActive, result.getBoolean(Boss.KEY_isActive) + "");
                                     details.add(info);
-                                //}
                             }
                             if (details.isEmpty()) {
                                 HashMap<String, String> info = new HashMap<>();
@@ -195,6 +173,7 @@ public class Followers extends AppCompatActivity {
                             }
                             listAdapter = new FollowersListAdapter(context, devices);
                             listView.setAdapter(listAdapter);
+                            progressBar.setVisibility(View.INVISIBLE);
                             FOLLOWERS_DETAILS.clear();
                             FOLLOWERS_DETAILS = details;
                         } else {
@@ -256,5 +235,27 @@ public class Followers extends AppCompatActivity {
             Boss.inform("Kicked " + selectedDeviceName, thisActivity.findViewById(R.id.followersList), 2);
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_followers, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_refresh) {
+            loadFollowers();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 }

@@ -83,7 +83,7 @@ public class LeadLocationAndParseService extends Service {
             SESSION_CODE = Integer.parseInt(intent.getStringExtra("SESSION_CODE"));
         } catch (NullPointerException e) {
             Boss.removeNotification();
-            Log.e(Boss.LOG_TAG, e.getMessage());
+            Log.e(Boss.LOG_TAG, e.getMessage() + " ");
         }
 
 
