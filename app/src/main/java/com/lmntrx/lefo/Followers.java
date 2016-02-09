@@ -251,8 +251,10 @@ public class Followers extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            loadFollowers();
+        switch (id) {
+            case R.id.action_refresh:
+                loadFollowers();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

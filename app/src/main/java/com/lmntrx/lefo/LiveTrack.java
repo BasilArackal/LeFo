@@ -11,9 +11,13 @@ import android.widget.TextView;
 
 public class LiveTrack extends AppCompatActivity {
 
+    public static String LIVETRACK_CODE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        LIVETRACK_CODE=Boss.genLeFoCode()+"";
 
         Utils.RetainTheme(this);
 
@@ -33,8 +37,8 @@ public class LiveTrack extends AppCompatActivity {
 
         final Switch switch1 = (Switch) findViewById(R.id.liveTrackSwitch);
         //switch1.setChecked(false);
-        final TextView textView1 = (TextView) findViewById(R.id.textView);
-        final TextView textView2 = (TextView) findViewById(R.id.TextView_LiveTrackCode);
+        final TextView liveTrackCodeLabel = (TextView) findViewById(R.id.liveTrackCodeLabel);
+        final TextView liveTrackCodeTXT = (TextView) findViewById(R.id.TextView_LiveTrackCode);
         final TextView textView3 = (TextView) findViewById(R.id.liveTrackTextView1);
         final TextView textView4= (TextView) findViewById(R.id.liveTrackSwitchMsg);
 
@@ -46,15 +50,16 @@ public class LiveTrack extends AppCompatActivity {
                     // The toggle is enabled
 
                   //  switch1.toggle();
-                    textView1.setVisibility(View.VISIBLE);
-                    textView2.setVisibility(View.VISIBLE);
+                    liveTrackCodeLabel.setVisibility(View.VISIBLE);
+                    liveTrackCodeTXT.setVisibility(View.VISIBLE);
+                    liveTrackCodeTXT.setText(LIVETRACK_CODE);
                     textView3.setText(R.string.live_track_enabled_warning);
                     textView4.setText(R.string.live_track_enabled_text);
                 } else {
                     // The toggle is disabled
                   //  switch1.toggle();
-                    textView1.setVisibility(View.GONE);
-                    textView2.setVisibility(View.GONE);
+                    liveTrackCodeLabel.setVisibility(View.GONE);
+                    liveTrackCodeTXT.setVisibility(View.GONE);
                     textView3.setText(R.string.live_track_disabled_warning_text);
                     textView4.setText(R.string.live_track_disabled_text);
                 }

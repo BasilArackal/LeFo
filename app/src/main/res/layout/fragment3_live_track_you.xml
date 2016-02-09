@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/your_live_track_code_label"
-            android:id="@+id/textView"
+            android:id="@+id/liveTrackCodeLabel"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/textColorSecondary"
             android:visibility="gone" />
