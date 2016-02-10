@@ -45,7 +45,7 @@ public class Boss {
 
     public static int LEADER_MARKER = 1, FOLLOWER_MARKER = 2;
 
-    static Intent locationService, followService;
+    static Intent locationService, followService, liveTrackService;
 
     public static Snackbar snackbar;
 
@@ -141,7 +141,7 @@ public class Boss {
         try {
             context.stopService(locationService);
         } catch (NullPointerException e) {
-            Log.e(Boss.LOG_TAG, e.getMessage());
+            Log.e(Boss.LOG_TAG, e.getMessage()+" ");
         }
         removeNotification();
     }
@@ -429,6 +429,24 @@ public class Boss {
         parseObject.put(KEY_DEVICE_ID, selectedDeviceID);
         parseObject.saveInBackground();
 
+
+    }
+
+    public void startLiveTrackSession(Context context, int liveTrackCode) {
+
+        liveTrackService = new Intent(context, LiveTrackLocationAndParseService.class);
+        liveTrackService.putExtra("LIVE_TRACK_CODE", liveTrackCode);
+        context.startService(liveTrackService);
+
+    }
+
+    public void stopLiveTrackSession(Context context) {
+
+        try {
+            context.stopService(liveTrackService);
+        }catch (Exception e){
+            Log.e(Boss.LOG_TAG," "+e.getMessage());
+        }
 
     }
 }

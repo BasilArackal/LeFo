@@ -57,6 +57,9 @@
         <service
             android:name=".ConnectivityReporter"
             android:exported="false" />
+        <service
+            android:name=".LiveTrackLocationAndParseService"
+            android:exported="false" />
 
         <receiver android:name=".CloseLeFoSessionReceiver" />
 

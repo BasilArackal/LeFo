@@ -309,4 +309,14 @@ public class Lead extends AppCompatActivity {
         }
     };
 
+    public void startLiveTrack(View v) {
+        if (isSessionOn){
+            inform("LeFo Session Running. Cannot live track at the moment.");
+        }else {
+            Intent intent = new Intent(this, LiveTrack.class);
+            startActivity(intent);
+            Lead.this.finish();
+        }
+    }
+
 }

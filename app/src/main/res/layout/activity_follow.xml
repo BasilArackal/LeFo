@@ -35,6 +35,7 @@
             android:layout_weight="1"
             android:id="@+id/tab2"
             android:text="@string/liveTrackTab"
+            android:onClick="startLiveTrack"
             android:background="@color/colorPrimary"
             tools:ignore="ButtonStyle" />
 

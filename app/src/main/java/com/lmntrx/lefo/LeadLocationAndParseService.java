@@ -91,7 +91,6 @@ public class LeadLocationAndParseService extends Service {
         locationListener = new LeFo_LocationListener();
 
 
-        //Applies only for API 23 and above. Cannot handle it directly from a service so i'll do it later. Peace\/
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             alertNoPermission();
             Log.d(Boss.LOG_TAG + "LOCATION_SERVICE", "Permission Denied");
@@ -328,7 +327,7 @@ public class LeadLocationAndParseService extends Service {
                 isSynced = true;
                 alertGotYou();
             } catch (NullPointerException e) {
-                Log.e(Boss.LOG_TAG, e.getMessage());
+                Log.e(Boss.LOG_TAG, e.getMessage()+" ");
                 Boss.removeNotification();
                 alertSessionInterrupted();
                 exit();

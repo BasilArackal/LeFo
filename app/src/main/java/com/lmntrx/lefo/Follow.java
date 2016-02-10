@@ -209,5 +209,11 @@ public class Follow extends AppCompatActivity {
         }
     }
 
+    public void startLiveTrack(View v) {
+        Intent intent = new Intent(this, LiveTrack.class);
+        startActivity(intent);
+        Follow.this.finish();
+    }
+
 
 }
