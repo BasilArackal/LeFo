@@ -102,6 +102,7 @@
     <string name="dummy_user_name">userName</string>
     <string name="dummy_id">userIDhere@whatever.com</string>
     <string name="followers_list_view_heading">Followers:</string>
+    <string name="title_activity_live_track_maps">Map</string>
 
 
 </resources>

@@ -87,6 +87,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity
+            android:name=".LiveTrackMapsActivity"
+            android:label="@string/title_activity_live_track_maps"></activity>
     </application>
 
 </manifest>

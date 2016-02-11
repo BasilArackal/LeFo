@@ -36,8 +36,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     String OBJECT_ID;
 
     static MarkerOptions leaderMarkerOptions;
-    static MarkerOptions followerMarkerOptions;
     static Marker leaderMarker;
+    static MarkerOptions followerMarkerOptions;
     static Marker followerMarker;
 
     Boolean updated = false;
@@ -163,13 +163,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public static void showLeaderLoc(ParseGeoPoint leaderLoc) {
         LatLng leaderLocation = new LatLng(leaderLoc.getLatitude(), leaderLoc.getLongitude());
-        Log.e(Boss.LOG_TAG, "showing leader loc");
+        Log.d(Boss.LOG_TAG, "showing leader loc");
         setMarker(mMap, leaderLocation, Boss.LEADER_MARKER);
     }
 
     public static void showFollowerLoc(Location followerLoc) {
         LatLng followerLocation = new LatLng(followerLoc.getLatitude(), followerLoc.getLongitude());
-        Log.e(Boss.LOG_TAG, "showing follower loc");
+        Log.d(Boss.LOG_TAG, "showing follower loc");
         setMarker(mMap, followerLocation, Boss.FOLLOWER_MARKER);
     }
 

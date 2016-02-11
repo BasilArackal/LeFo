@@ -1,9 +1,11 @@
 package com.lmntrx.lefo;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +13,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 public class LiveTrack extends AppCompatActivity {
 
@@ -20,7 +31,11 @@ public class LiveTrack extends AppCompatActivity {
 
     Switch liveTrackSwitch;
 
+    EditText liveTrackCodeEntry;
+
     Boss boss;
+
+    String device_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +47,11 @@ public class LiveTrack extends AppCompatActivity {
 
         boss = new Boss();
 
+        device_id = Boss.getDeviceID(this);
+
         Button tab1 = (Button) findViewById(R.id.tab1);
 
+        liveTrackCodeEntry = (EditText) findViewById(R.id.liveTrackCodeEntry);
 
         //Intent Filters
         IntentFilter gpsDisabled = new IntentFilter();
@@ -75,6 +93,7 @@ public class LiveTrack extends AppCompatActivity {
 
 
         liveTrackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressLint("SetTextI18n")
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
@@ -152,4 +171,92 @@ public class LiveTrack extends AppCompatActivity {
         }
     };
 
+    public void startTracking(View view) {
+
+        int enteredCode;
+
+        try {
+            enteredCode = Integer.parseInt(liveTrackCodeEntry.getText().toString());
+            verifyAndStart(enteredCode);
+        } catch (NumberFormatException e) {
+            Log.e(Boss.LOG_TAG, e.getMessage() + " ");
+            inform("Please Enter a valid session code");
+        }
+
+
+
+
+    }
+
+
+    private void verifyAndStart(final int SESSION_CODE) {
+        if (SESSION_CODE != -1) {
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Boss.PARSE_BLACKLIST_CLASS);
+            query.whereEqualTo(Boss.KEY_DEVICE_ID, device_id);
+            query.whereEqualTo(Boss.KEY_CON_CODE, SESSION_CODE);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list.isEmpty()) {
+                        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
+                        queryID.whereEqualTo(Boss.KEY_QRCODE, SESSION_CODE);
+                        queryID.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                                if (e == null) {
+                                    if (parseObjects.isEmpty()) {
+
+                                        inform("Please Enter a valid session code");
+
+                                    } else {
+                                        for (ParseObject result : parseObjects) {
+                                            Boss.OBJECT_ID = result.getObjectId();
+                                            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                                            vibrator.vibrate(50);
+                                            startMaps(SESSION_CODE,result.getObjectId());
+                                        }
+                                    }
+                                } else {
+                                    inform("Please Enter a valid session code");
+                                }
+                            }
+                        });
+
+
+                    } else {
+                        inform("Sorry, You were kicked from this session");
+                    }
+                }
+            });
+
+        } else {
+            inform("Please enter a session code");
+        }
+    }
+
+    private void inform(String msg) {
+        View view = findViewById(R.id.liveTrackCodeEntry);
+        Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    private void startMaps(int sessionCode, String ObjectID) {
+        Intent maps = new Intent(this, LiveTrackMapsActivity.class);
+        maps.putExtra("SESSION_CODE", sessionCode);
+        maps.putExtra("OBJECT_ID",ObjectID);
+        startActivity(maps);
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        unregisterReceiver(cannotLocateBR);
+        unregisterReceiver(gotYaBR);
+        unregisterReceiver(gpsDisabledBR);
+        unregisterReceiver(noLocationPermissionBR);
+        unregisterReceiver(sessionInterruptedBR);
+
+        super.onDestroy();
+    }
 }

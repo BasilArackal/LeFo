@@ -29,7 +29,7 @@
 
     <EditText
 
-        android:id="@+id/liveTrackEditText1"
+        android:id="@+id/liveTrackCodeEntry"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:text="@string/start_tracking_button_text"
         android:id="@+id/startLiveTrackBTN"
+        android:onClick="startTracking"
         android:textColor="@color/textColorSecondary"
         android:layout_gravity="center" />
 
