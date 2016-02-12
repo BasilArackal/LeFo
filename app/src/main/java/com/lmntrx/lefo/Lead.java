@@ -242,6 +242,7 @@ public class Lead extends AppCompatActivity {
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
+                            alerted=false;
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)

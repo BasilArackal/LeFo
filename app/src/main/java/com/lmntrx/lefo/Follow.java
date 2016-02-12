@@ -1,13 +1,16 @@
 package com.lmntrx.lefo;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,7 +63,7 @@ public class Follow extends AppCompatActivity {
     }
 
     public void startJourney(View view) {
-        if (startRegistrationService()) {
+        if (isPlayServicesAvailable()) {
             try {
                 SESSION_CODE = codeTXT.getText() + "";
                 verifyAndStart();
@@ -136,11 +139,11 @@ public class Follow extends AppCompatActivity {
     }
 
     public void openQRScanner(View view) {
-
-
-        if (startRegistrationService()) {
-            startActivity(new Intent(this, Scanner.class));
-        }
+        if (isPlayServicesAvailable())
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                Boss.askPermission("CAMERA", Follow.this);
+            } else
+                startActivity(new Intent(this, Scanner.class));
 
     }
 
@@ -171,14 +174,14 @@ public class Follow extends AppCompatActivity {
         unregisterReceiver(lostConnectionBR);
         unregisterReceiver(connectionResumedBR);
 
-        ConnectivityReporter.SURRENDER=true;
+        ConnectivityReporter.SURRENDER = true;
 
 
         super.onDestroy();
     }
 
 
-    private Boolean startRegistrationService() {
+    private Boolean isPlayServicesAvailable() {
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int code = api.isGooglePlayServicesAvailable(this);
         if (code == ConnectionResult.SUCCESS) {
@@ -199,7 +202,7 @@ public class Follow extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != Activity.RESULT_OK) {
-                    ConnectivityReporter.SURRENDER=true;
+                    ConnectivityReporter.SURRENDER = true;
                     thisActivity.finish();
                 }
                 break;
