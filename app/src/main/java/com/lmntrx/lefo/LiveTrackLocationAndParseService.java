@@ -40,6 +40,8 @@ public class LiveTrackLocationAndParseService extends Service {
 
     public static boolean isSynced = false;
 
+    static int callFrom=0;
+
     //Fetch Location
     LocationManager locationManager;
 
@@ -77,6 +79,7 @@ public class LiveTrackLocationAndParseService extends Service {
 
         try {
             liveTrackCode=intent.getIntExtra("LIVE_TRACK_CODE", 1);
+            callFrom=intent.getIntExtra("CALL_FROM",0);
         }catch (NullPointerException e){
             Log.e(Boss.LOG_TAG," "+e.getMessage());
         }
@@ -283,8 +286,10 @@ public class LiveTrackLocationAndParseService extends Service {
     }
 
     private void alertGotYou() {
-        Intent cannotLocate = new Intent(GOT_YA);
-        LiveTrackLocationAndParseService.this.sendBroadcast(cannotLocate);
+        //if (callFrom!=1){
+            Intent cannotLocate = new Intent(GOT_YA);
+            LiveTrackLocationAndParseService.this.sendBroadcast(cannotLocate);
+        //}
     }
 
     private void alertSessionInterrupted() {

@@ -432,10 +432,11 @@ public class Boss {
 
     }
 
-    public void startLiveTrackSession(Context context, int liveTrackCode) {
+    public void startLiveTrackSession(Context context, int liveTrackCode, int i) {
 
         liveTrackService = new Intent(context, LiveTrackLocationAndParseService.class);
         liveTrackService.putExtra("LIVE_TRACK_CODE", liveTrackCode);
+        liveTrackService.putExtra("CALL_FROM",i);
         context.startService(liveTrackService);
 
     }

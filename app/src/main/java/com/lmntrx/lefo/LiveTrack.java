@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.PersistableBundle;
 import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -29,17 +29,19 @@ import java.util.List;
 
 public class LiveTrack extends AppCompatActivity {
 
-    int LIVE_TRACK_CODE;
+    static int LIVE_TRACK_CODE;
 
     Switch liveTrackSwitch;
 
     EditText liveTrackCodeEntry;
 
+    TextView liveTrackCodeTXT;
+
     Boss boss;
 
     String device_id;
 
-    Boolean isSessionOn, alerted;
+    static Boolean isSessionOn, alerted;
 
     Bundle savedInstanceState;
 
@@ -47,7 +49,7 @@ public class LiveTrack extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.savedInstanceState=savedInstanceState;
+        this.savedInstanceState = savedInstanceState;
 
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
@@ -60,13 +62,13 @@ public class LiveTrack extends AppCompatActivity {
         liveTrackSwitch = (Switch) findViewById(R.id.liveTrackSwitch);
         //liveTrackSwitch.setChecked(false);
         final TextView liveTrackCodeLabel = (TextView) findViewById(R.id.liveTrackCodeLabel);
-        final TextView liveTrackCodeTXT = (TextView) findViewById(R.id.TextView_LiveTrackCode);
+        liveTrackCodeTXT = (TextView) findViewById(R.id.TextView_LiveTrackCode);
         final TextView textView3 = (TextView) findViewById(R.id.liveTrackTextView1);
         final TextView textView4 = (TextView) findViewById(R.id.liveTrackSwitchMsg);
 
         LIVE_TRACK_CODE = Boss.genLeFoCode();
 
-        isSessionOn=false;
+        isSessionOn = false;
 
         boss = new Boss();
 
@@ -127,13 +129,13 @@ public class LiveTrack extends AppCompatActivity {
                     textView4.setText(R.string.live_track_enabled_text);
                     try {
                         if (!isSessionOn) {
-                            boss.startLiveTrackSession(LiveTrack.this, LIVE_TRACK_CODE);
+                            boss.startLiveTrackSession(LiveTrack.this, LIVE_TRACK_CODE, 1);
                             isSessionOn = true;
                         }
                     } catch (Exception n) {
                         Log.e(Boss.LOG_TAG + "LiveTrack", "Unable to start session " + n.getMessage());
                     }
-                } else if (!isChecked && isSessionOn){
+                } else if (!isChecked && isSessionOn) {
                     // The toggle is disabled
                     //  liveTrackSwitch.toggle();
                     liveTrackCodeLabel.setVisibility(View.GONE);
@@ -151,25 +153,33 @@ public class LiveTrack extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        /*if (savedInstanceState != null) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (isSessionOn) {
+                boss.stopLiveTrackSession(this);
+            }
             isSessionOn = savedInstanceState.getBoolean("SESSION_STATUS");
             LIVE_TRACK_CODE = savedInstanceState.getInt("LIVE_TRACK_CODE");
+            liveTrackCodeTXT.setText(LIVE_TRACK_CODE + "");
             liveTrackSwitch.setChecked(isSessionOn);
+            if (isSessionOn)
+                boss.startLiveTrackSession(this, LIVE_TRACK_CODE, 1);
+            Toast.makeText(this, savedInstanceState.getBoolean("SESSION_STATUS") + " " + savedInstanceState.getInt("LIVE_TRACK_CODE"), Toast.LENGTH_LONG).show();
         } else {
             isSessionOn = false;
+        }
 
-        }*/
-        super.onStart();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-       /* outState.putBoolean("SESSION_STATUS", isSessionOn);
-        outState.putInt("LIVE_TRACK_CODE", LIVE_TRACK_CODE);*/
+        outState.putBoolean("SESSION_STATUS", isSessionOn);
+        outState.putInt("LIVE_TRACK_CODE", LIVE_TRACK_CODE);
 
-        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     private BroadcastReceiver gpsDisabledBR = new BroadcastReceiver() {
@@ -307,6 +317,9 @@ public class LiveTrack extends AppCompatActivity {
         unregisterReceiver(gpsDisabledBR);
         unregisterReceiver(noLocationPermissionBR);
         unregisterReceiver(sessionInterruptedBR);
+        if (isSessionOn) {
+            boss.stopLiveTrackSession(this);
+        }
 
         super.onDestroy();
     }
@@ -334,7 +347,7 @@ public class LiveTrack extends AppCompatActivity {
                     })
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            alerted=false;
+                            alerted = false;
                             dialog.cancel();
                         }
                     })
