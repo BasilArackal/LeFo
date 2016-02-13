@@ -97,12 +97,13 @@
     <string name="live_track_friends_label">Live Track Your Friends</string>
     <string name="ask_friend_label">Ask your friend to enable LiveTrack inorder to track them</string>
     <string name="enter_tracking_code_label">Enter Live Track Code</string>
-    <string name="start_tracking_button_text">Start Livetrack</string>
+    <string name="start_tracking_button_text">Start LiveTrack</string>
     <string name="nav_header_img_description">NavHeader Image</string>
     <string name="dummy_user_name">userName</string>
     <string name="dummy_id">userIDhere@whatever.com</string>
     <string name="followers_list_view_heading">Followers:</string>
     <string name="title_activity_live_track_maps">Map</string>
+    <string name="integer_to_string">%d</string>
 
 
 </resources>

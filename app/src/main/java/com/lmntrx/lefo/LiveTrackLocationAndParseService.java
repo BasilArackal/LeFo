@@ -286,10 +286,10 @@ public class LiveTrackLocationAndParseService extends Service {
     }
 
     private void alertGotYou() {
-        //if (callFrom!=1){
+        if (callFrom!=1){
             Intent cannotLocate = new Intent(GOT_YA);
             LiveTrackLocationAndParseService.this.sendBroadcast(cannotLocate);
-        //}
+        }
     }
 
     private void alertSessionInterrupted() {
