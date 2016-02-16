@@ -30,7 +30,9 @@ import java.util.TimerTask;
 public class Followers extends AppCompatActivity {
 
     int SESSION_CODE;
+
     ListView listView;
+
     Context context;
 
     public static ProgressBar progressBar;

@@ -45,7 +45,7 @@ public class LiveTrackLocationAndParseService extends Service {
     //Fetch Location
     LocationManager locationManager;
 
-    //LeFo_LocationListener is defined below
+    //LeFo_LocationListener is defined below as a subclass
     LocationListener locationListener;
 
     //Parse ObjectID
