@@ -49,8 +49,11 @@ public class Lead extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Loading Theme
         int NoActionBar=1;
         Utils.RetainTheme(this,NoActionBar);
+
         setContentView(R.layout.activity_lead);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
