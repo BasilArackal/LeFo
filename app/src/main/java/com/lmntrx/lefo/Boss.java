@@ -52,6 +52,7 @@ public class Boss {
     //Parse Authentication Keys
     public final String PARSE_APP_KEY = "U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
     public final String PARSE_CLIENT_KEY = "PPNey0aT3L0LAuj9LuEgBgtSpn4eEALQ5WMJzAM6";
+    public final String HEROKU_SERVER_URL="https://lefo.herokuapp.com/parse/";
 
     public static boolean isParseInitialised = false;
 
@@ -119,7 +120,12 @@ public class Boss {
 
     public void initializeParse(Context con) {
         if (!isParseInitialised) {
-            Parse.initialize(con, PARSE_APP_KEY, PARSE_CLIENT_KEY);
+            Parse.initialize(new Parse.Configuration.Builder(con)
+                            .applicationId(PARSE_APP_KEY)
+                            .clientKey(PARSE_CLIENT_KEY)
+                            .server(HEROKU_SERVER_URL)
+                            .build()
+            );
             isParseInitialised = true;
         }
     }

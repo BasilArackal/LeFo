@@ -89,7 +89,7 @@
 
         <activity
             android:name=".LiveTrackMapsActivity"
-            android:label="@string/title_activity_live_track_maps"></activity>
+            android:label="@string/title_activity_live_track_maps"/>
     </application>
 
 </manifest>
