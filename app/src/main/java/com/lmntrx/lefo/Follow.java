@@ -84,44 +84,48 @@ public class Follow extends AppCompatActivity {
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> list, ParseException e) {
-                    if (list.isEmpty()) {
+                    try {
+                        if (list.isEmpty()) {
 
-                        final int integer_code;
-                        try {
-                            integer_code = Integer.parseInt(SESSION_CODE);
-                        } catch (Exception e1) {
+                            final int integer_code;
+                            try {
+                                integer_code = Integer.parseInt(SESSION_CODE);
+                            } catch (Exception e1) {
 
-                            inform("Please Enter a valid session code");
+                                inform("Please Enter a valid session code");
 
-                            return;
-                        }
-                        ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
-                        queryID.whereEqualTo(Boss.KEY_QRCODE, integer_code);
-                        queryID.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> parseObjects, ParseException e) {
-                                if (e == null) {
-                                    if (parseObjects.isEmpty()) {
-
-                                        inform("Please Enter a valid session code");
-
-                                    } else {
-                                        for (ParseObject result : parseObjects) {
-                                            Boss.OBJECT_ID = result.getObjectId();
-                                            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                                            vibrator.vibrate(50);
-                                            startMaps(SESSION_CODE);
-                                        }
-                                    }
-                                } else {
-                                    inform("Please Enter a valid session code");
-                                }
+                                return;
                             }
-                        });
+                            ParseQuery<ParseObject> queryID = ParseQuery.getQuery(Boss.PARSE_CLASS);
+                            queryID.whereEqualTo(Boss.KEY_QRCODE, integer_code);
+                            queryID.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> parseObjects, ParseException e) {
+                                    if (e == null) {
+                                        if (parseObjects.isEmpty()) {
+
+                                            inform("Please Enter a valid session code");
+
+                                        } else {
+                                            for (ParseObject result : parseObjects) {
+                                                Boss.OBJECT_ID = result.getObjectId();
+                                                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                                                vibrator.vibrate(50);
+                                                startMaps(SESSION_CODE);
+                                            }
+                                        }
+                                    } else {
+                                        inform("Please Enter a valid session code");
+                                    }
+                                }
+                            });
 
 
-                    } else {
-                        inform("Sorry, You were kicked from this session");
+                        } else {
+                            inform("Sorry, You were kicked from this session");
+                        }
+                    }catch (NullPointerException e1){
+                        inform("Please connect to a working network!");
                     }
                 }
             });

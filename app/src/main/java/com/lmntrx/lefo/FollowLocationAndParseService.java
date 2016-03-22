@@ -160,11 +160,15 @@ public class FollowLocationAndParseService extends Service {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                for (ParseObject object : list) {
-                    if (object.getString(Boss.KEY_CON_CODE).equals(SESSION_CODE+"")){
-                        alertKicked();
-                        kickAcknowledgement=true;
+                try {
+                    for (ParseObject object : list) {
+                        if (object.getString(Boss.KEY_CON_CODE).equals(SESSION_CODE+"")){
+                            alertKicked();
+                            kickAcknowledgement=true;
+                        }
                     }
+                }catch (NullPointerException e1){
+                    Log.e(Boss.LOG_TAG,"Lost Connection");
                 }
             }
         });
