@@ -36,9 +36,6 @@ public class Home extends AppCompatActivity
 
         HOME_ACTIVITY=this;
 
-        /*if (savedInstanceState == null)
-            startRegistrationService();*/
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Boss.DarkTheme = sharedPreferences.getBoolean("DARK_THEME", true);
 
@@ -53,12 +50,7 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         boss = new Boss();
-
-
-
-
 
         boss.initializeParse(this);
         ParseAnalytics.trackAppOpenedInBackground(getIntent());

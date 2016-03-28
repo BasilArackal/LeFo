@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -211,8 +212,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public static void alertSessionEnd() {
-        new AlertDialog.Builder(context)
-                .setCancelable(false)
+
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
+        builder.setCancelable(false)
                 .setTitle("Session Ended")
                 .setMessage("This LeFo Session was closed by Leader")
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -269,8 +276,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void showIsKickedAlertDialog() {
 
-        new AlertDialog.Builder(context)
-                .setCancelable(false)
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
+        builder.setCancelable(false)
                 .setTitle("Kicked")
                 .setMessage("Sorry, You were kicked by the leader")
                 .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -313,8 +325,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void alertDisconnectSession() {
-        new AlertDialog.Builder(context)
-                .setCancelable(false)
+
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
+        builder.setCancelable(false)
                 .setTitle("Disconnect")
                 .setMessage("Do you want to disconnect from this session?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

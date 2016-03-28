@@ -52,7 +52,7 @@ public class Boss {
     //Parse Authentication Keys
     public final String PARSE_APP_KEY = "U4lYViqyMsMmvicbKzvKWLV4mkOJN6VfPbtfvHmp";
     public final String PARSE_CLIENT_KEY = "PPNey0aT3L0LAuj9LuEgBgtSpn4eEALQ5WMJzAM6";
-    public final String HEROKU_SERVER_URL="https://lefo.herokuapp.com/parse/";
+    public final String HEROKU_SERVER_URL = "https://lefo.herokuapp.com/parse/";
 
     public static boolean isParseInitialised = false;
 
@@ -102,7 +102,7 @@ public class Boss {
         if (model.startsWith(manufacturer)) {
             return capitalize(user + model);
         } else {
-            return capitalize(user+" "+manufacturer+ " " + model) ;
+            return capitalize(user + " " + manufacturer + " " + model);
         }
     }
 
@@ -147,7 +147,7 @@ public class Boss {
         try {
             context.stopService(locationService);
         } catch (NullPointerException e) {
-            Log.e(Boss.LOG_TAG, e.getMessage()+" ");
+            Log.e(Boss.LOG_TAG, e.getMessage() + " ");
         }
         removeNotification();
     }
@@ -158,7 +158,7 @@ public class Boss {
             Lead.canRefresh = true;
         } catch (Exception e) {
 
-            Log.e(Boss.LOG_TAG, e.getMessage()+" ");
+            Log.e(Boss.LOG_TAG, e.getMessage() + " ");
         }
     }
 
@@ -178,7 +178,6 @@ public class Boss {
 
         Intent contentIntent = new Intent(context, Lead.class);
         PendingIntent contentPendingIntent = PendingIntent.getBroadcast(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
 
 
         Notification.Builder builder = new Notification.Builder(context.getApplicationContext());
@@ -201,7 +200,12 @@ public class Boss {
 
     //EnableGPS Dialog
     public static void buildAlertMessageNoGps(final Context context) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
                 .setTitle("Turn On Location")
@@ -215,13 +219,18 @@ public class Boss {
                         dialog.cancel();
                     }
                 });
-        final AlertDialog alert = builder.create();
+        AlertDialog alert = builder.create();
         alert.show();
     }
 
 
     public static void buildAlertMessageLostGps(final Context context, final Activity activity) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
         builder.setMessage("Your GPS seems to be disabled, please enable it to continue.")
                 .setCancelable(false)
                 .setTitle("Session Interrupted")
@@ -237,7 +246,7 @@ public class Boss {
                         activity.finish();
                     }
                 });
-        final AlertDialog alert = builder.create();
+        AlertDialog alert = builder.create();
         alert.show();
     }
 
@@ -304,7 +313,12 @@ public class Boss {
     }
 
     public static void alertLostConnection(final Context context, final Activity activity) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
         builder.setMessage("Sorry, Connection was lost.")
                 .setCancelable(false)
                 .setTitle("Session Interrupted")
@@ -332,7 +346,7 @@ public class Boss {
                         }
 
                 );
-        final AlertDialog alert = builder.create();
+        AlertDialog alert = builder.create();
         alert.show();
 
 
@@ -340,20 +354,38 @@ public class Boss {
 
     public static void buildAlertMessageSessionInterrupted(final Context context) {
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("Sorry, Connection was lost.")
-                .setCancelable(false)
-                .setTitle("Session Interrupted")
-                .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                dialog.cancel();
-                                Lead.currentLeadActivity.finish();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+            builder.setMessage("Sorry, Connection was lost.")
+                    .setCancelable(false)
+                    .setTitle("Session Interrupted")
+                    .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
+                                public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                    dialog.cancel();
+                                    Lead.currentLeadActivity.finish();
+                                }
                             }
-                        }
 
-                );
-        final AlertDialog alert = builder.create();
-        alert.show();
+                    );
+            final AlertDialog alert = builder.create();
+            alert.show();
+        } else {
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Sorry, Connection was lost.")
+                    .setCancelable(false)
+                    .setTitle("Session Interrupted")
+                    .setNegativeButton("Close Session", new DialogInterface.OnClickListener() {
+                                public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                    dialog.cancel();
+                                    Lead.currentLeadActivity.finish();
+                                }
+                            }
+
+                    );
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
 
     }
 
@@ -442,7 +474,7 @@ public class Boss {
 
         liveTrackService = new Intent(context, LiveTrackLocationAndParseService.class);
         liveTrackService.putExtra("LIVE_TRACK_CODE", liveTrackCode);
-        liveTrackService.putExtra("CALL_FROM",i);
+        liveTrackService.putExtra("CALL_FROM", i);
         context.startService(liveTrackService);
 
     }
@@ -451,8 +483,8 @@ public class Boss {
 
         try {
             context.stopService(liveTrackService);
-        }catch (Exception e){
-            Log.e(Boss.LOG_TAG," "+e.getMessage());
+        } catch (Exception e) {
+            Log.e(Boss.LOG_TAG, " " + e.getMessage());
         }
 
     }

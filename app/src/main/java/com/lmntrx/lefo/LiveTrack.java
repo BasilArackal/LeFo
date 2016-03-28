@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Vibrator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -332,8 +333,13 @@ public class LiveTrack extends AppCompatActivity {
 
     void alertSessionEnd() {
         if (!alerted) {
-            new AlertDialog.Builder(LiveTrack.this)
-                    .setCancelable(false)
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(LiveTrack.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(LiveTrack.this);
+            }
+            builder .setCancelable(false)
                     .setTitle("End Session")
                     .setMessage("Do you want to end this LeFo Session?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

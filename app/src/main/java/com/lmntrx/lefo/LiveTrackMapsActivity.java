@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -202,9 +203,13 @@ public class LiveTrackMapsActivity extends FragmentActivity implements OnMapRead
     }
 
     private void alertKicked() {
-
-        new AlertDialog.Builder(LiveTrackMapsActivity.this)
-                .setCancelable(false)
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this);
+        }
+        builder.setCancelable(false)
                 .setTitle("Kicked")
                 .setMessage("Sorry, You were kicked")
                 .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -312,8 +317,14 @@ public class LiveTrackMapsActivity extends FragmentActivity implements OnMapRead
     }
 
     public void alertDisconnectSession() {
-        new AlertDialog.Builder(LiveTrackMapsActivity.this)
-                .setCancelable(false)
+
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this);
+        }
+        builder.setCancelable(false)
                 .setTitle("Disconnect")
                 .setMessage("Do you want to disconnect from this session?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -333,8 +344,13 @@ public class LiveTrackMapsActivity extends FragmentActivity implements OnMapRead
     }
 
     void alertSessionEnd() {
-        new AlertDialog.Builder(LiveTrackMapsActivity.this)
-                .setCancelable(false)
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(LiveTrackMapsActivity.this);
+        }
+        builder.setCancelable(false)
                 .setTitle("Session Ended")
                 .setMessage("This LeFo Session was closed")
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

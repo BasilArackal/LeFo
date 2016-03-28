@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -231,7 +232,29 @@ public class Lead extends AppCompatActivity {
 
     public static void alertSessionEnd() {
         if (!alerted) {
-            new AlertDialog.Builder(CON)
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                new AlertDialog.Builder(CON,android.R.style.Theme_Material_Light_Dialog_Alert)
+                        .setCancelable(false)
+                        .setTitle("End Session")
+                        .setMessage("Do you want to end this LeFo Session?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Boss.deleteSession(CON);
+                                isSessionOn = false;
+                                currentLeadActivity.finish();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                alerted=false;
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            } else {
+                new AlertDialog.Builder(CON)
                     .setCancelable(false)
                     .setTitle("End Session")
                     .setMessage("Do you want to end this LeFo Session?")
@@ -250,6 +273,8 @@ public class Lead extends AppCompatActivity {
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
+            }
+
             alerted = true;
         }
     }
