@@ -12,10 +12,14 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -28,7 +32,7 @@ import java.util.List;
 /*
  * Created by livin on 13/1/16.
  */
-public class LeadLocationAndParseService extends Service {
+public class LeadLocationAndParseService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     //Transaction Tokens
@@ -62,6 +66,9 @@ public class LeadLocationAndParseService extends Service {
 
     boolean exitCalled = false;
 
+    //test
+    GoogleApiClient googleApiClient = null;
+
 
     @Nullable
     @Override
@@ -86,6 +93,16 @@ public class LeadLocationAndParseService extends Service {
             Log.e(Boss.LOG_TAG, e.getMessage() + " ");
         }
 
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        googleApiClient.connect();
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LeFo_LocationListener();
@@ -98,6 +115,7 @@ public class LeadLocationAndParseService extends Service {
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, locationListener);
             current_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
             if (current_location != null) {
                 try {
                     syncDB(current_location);
@@ -125,6 +143,7 @@ public class LeadLocationAndParseService extends Service {
 
 
     public void exit() {
+        googleApiClient.disconnect();
         Log.d(Boss.LOG_TAG, "exit() called");
         unRegisterAllFollowers();
         stop = false;
@@ -201,6 +220,29 @@ public class LeadLocationAndParseService extends Service {
         Intent noPermission = new Intent(NO_LOCATION_PERMISSION);
         LeadLocationAndParseService.this.sendBroadcast(noPermission);
         Log.e(Boss.LOG_TAG, "alertNoPermission() Called");
+    }
+
+    @SuppressLint("LongLogTag")
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            alertNoPermission();
+            Log.d(Boss.LOG_TAG, "Location Permission Denied");
+            exit();
+        } else
+            current_location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(Boss.LOG_TAG, "Suspended GoogleAPIClient Connection");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(Boss.LOG_TAG, "GoogleAPIClient Connection Failed");
     }
 
 
@@ -327,7 +369,7 @@ public class LeadLocationAndParseService extends Service {
                 isSynced = true;
                 alertGotYou();
             } catch (NullPointerException e) {
-                Log.e(Boss.LOG_TAG, e.getMessage()+" ");
+                Log.e(Boss.LOG_TAG, e.getMessage() + " ");
                 Boss.removeNotification();
                 alertSessionInterrupted();
                 exit();
